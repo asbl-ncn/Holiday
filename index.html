@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a4a8f">
+<meta name="description" content="Aktivitetsguide til familieferien på Rhodos – med base på Matoula Beach i Ialysos. Filtrér efter børn, ældre, aktivt, afstand og type.">
+<title>Rhodos-guide for hele familien</title>
+<style>
+  :root{
+    --aegean:#0a4a8f;       /* deep Greek blue */
+    --aegean-2:#1a73c9;     /* brighter blue */
+    --sea:#1aa9c9;          /* turquoise */
+    --sand:#f4ead3;         /* sandy */
+    --ink:#13212e;          /* text */
+    --muted:#5b6b78;        /* muted text */
+    --line:#e2e8ee;         /* borders */
+    --bg:#f6f9fc;           /* page bg */
+    --card:#ffffff;
+    --ok:#127a4b;
+    --warn:#9a6a00;
+    --shadow:0 1px 2px rgba(16,42,67,.06),0 6px 18px rgba(16,42,67,.08);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--aegean-2)}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    background:linear-gradient(160deg,var(--aegean) 0%,var(--aegean-2) 55%,var(--sea) 130%);
+    color:#fff;
+    padding:calc(env(safe-area-inset-top) + 28px) 0 26px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(1200px 220px at 80% -40%,rgba(255,255,255,.18),transparent 60%);
+    pointer-events:none;
+  }
+  .hero h1{margin:0 0 6px;font-size:1.7rem;line-height:1.15;letter-spacing:-.01em}
+  .hero p{margin:0;opacity:.95;font-size:1rem;max-width:48ch}
+  .hero .where{
+    display:inline-flex;gap:8px;align-items:center;margin-top:14px;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);
+    padding:7px 12px;border-radius:999px;font-size:.86rem;backdrop-filter:blur(2px);
+  }
+
+  /* ---------- Intro ---------- */
+  .intro{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin:18px 0;box-shadow:var(--shadow);
+  }
+  .intro h2{margin:0 0 6px;font-size:1.05rem}
+  .intro p{margin:.3em 0;color:var(--muted);font-size:.94rem}
+
+  /* ---------- Filter panel (collapsible + sticky) ---------- */
+  .filterpanel{
+    position:sticky;top:8px;z-index:30;margin-bottom:16px;
+    background:rgba(255,255,255,.97);backdrop-filter:saturate(140%) blur(8px);
+    border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+  }
+  .filtersummary{
+    cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;
+    padding:13px 15px;font-weight:800;font-size:1rem;user-select:none;
+  }
+  .filtersummary::-webkit-details-marker{display:none}
+  .filtersummary .count{margin-left:auto;font-weight:600;color:var(--muted);font-size:.84rem}
+  .filtersummary .chev{color:var(--muted);transition:transform .15s ease;font-size:.7rem}
+  .filterpanel[open] .filtersummary .chev{transform:rotate(180deg)}
+  .filterbody{padding:2px 14px 12px;max-height:68vh;overflow:auto;border-top:1px solid var(--line)}
+  .filtergroup{margin:8px 0}
+  .filtergroup .glabel{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:0 2px 6px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);
+    padding:8px 13px;border-radius:999px;font-size:.86rem;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;line-height:1;font-weight:600;
+    transition:transform .04s ease,background .12s ease,border-color .12s ease,color .12s ease;
+    min-height:38px;
+  }
+  .chip:hover{border-color:var(--aegean-2)}
+  .chip:active{transform:scale(.97)}
+  .chip[aria-pressed="true"]{background:var(--aegean);border-color:var(--aegean);color:#fff}
+  .chip .ic{font-size:1rem}
+  .filtermeta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;flex-wrap:wrap}
+  .count{font-size:.86rem;color:var(--muted)}
+  .count b{color:var(--ink)}
+  .reset{
+    appearance:none;background:none;border:none;color:var(--aegean-2);font-weight:700;
+    font-size:.86rem;cursor:pointer;padding:6px 4px;border-radius:8px;
+  }
+  .reset[hidden]{display:none}
+
+  /* ---------- Zones & cards ---------- */
+  .zone{margin:22px 0 8px}
+  .zone h2{
+    font-size:1.18rem;margin:0 0 2px;display:flex;align-items:center;gap:9px;letter-spacing:-.01em;
+  }
+  .zone .zsub{color:var(--muted);font-size:.88rem;margin:0 0 12px}
+  .zone[hidden]{display:none}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:620px){.grid{grid-template-columns:1fr 1fr}}
+  @media(min-width:920px){.grid{grid-template-columns:1fr 1fr 1fr}}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:15px 15px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;
+    position:relative;
+  }
+  .card[hidden]{display:none}
+  .card.top::before{
+    content:"★ Familiefavorit";position:absolute;top:-9px;left:14px;
+    background:linear-gradient(90deg,var(--aegean),var(--sea));color:#fff;
+    font-size:.68rem;font-weight:800;letter-spacing:.03em;padding:3px 9px;border-radius:999px;
+  }
+  .card h3{margin:4px 0 0;font-size:1.06rem;line-height:1.2}
+  .card .desc{margin:0;color:#33414d;font-size:.92rem}
+  .badges{display:flex;flex-wrap:wrap;gap:6px}
+  .badge{
+    font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:999px;
+    border:1px solid transparent;white-space:nowrap;
+  }
+  .b-kids{background:#fff3e0;color:#9a5a00;border-color:#ffe1b3}
+  .b-eld{background:#eaf3ff;color:#11528f;border-color:#cfe3fb}
+  .b-act{background:#e9f7ef;color:#127a4b;border-color:#c7ecd6}
+  .b-near{background:#eef0f3;color:#3f4d59;border-color:#dde3e9}
+  .b-car{background:#fdeaea;color:#a13434;border-color:#f6cccc}
+  .b-nocar{background:#eaf6f7;color:#0c6b78;border-color:#c8e9ec}
+  .b-cat{background:#f1ecfb;color:#5b3ea8;border-color:#e0d5f6}
+
+  .meta{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:.84rem;color:var(--muted);margin-top:2px}
+  .meta .k{font-weight:700;color:#41505c}
+  .tip{font-size:.84rem;color:#3a4954;background:#f3f8fc;border:1px dashed #cfe0ee;border-radius:10px;padding:7px 10px}
+  .tip b{color:var(--aegean)}
+  .card .actions{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap;padding-top:4px}
+  .maplink{
+    display:inline-flex;align-items:center;gap:6px;font-size:.86rem;font-weight:700;
+    text-decoration:none;color:#fff;background:var(--aegean-2);
+    padding:8px 12px;border-radius:10px;
+  }
+  .maplink:hover{background:var(--aegean)}
+
+  .noresults{display:none;text-align:center;color:var(--muted);padding:34px 10px}
+  .noresults.show{display:block}
+
+  /* ---------- Practical ---------- */
+  .practical{margin:30px 0 8px}
+  .practical h2{font-size:1.25rem;margin:0 0 12px;display:flex;align-items:center;gap:9px}
+  details.acc{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow);
+  }
+  details.acc>summary{
+    cursor:pointer;list-style:none;padding:14px 16px;font-weight:700;font-size:.98rem;
+    display:flex;align-items:center;gap:10px;
+  }
+  details.acc>summary::-webkit-details-marker{display:none}
+  details.acc>summary::after{content:"＋";margin-left:auto;color:var(--muted);font-weight:700}
+  details.acc[open]>summary::after{content:"－"}
+  details.acc .body{padding:0 16px 14px;color:#33414d;font-size:.92rem}
+  details.acc .body ul{margin:.2em 0;padding-left:1.2em}
+  details.acc .body li{margin:.32em 0}
+
+  footer{margin:30px 0 40px;color:var(--muted);font-size:.82rem;text-align:center}
+  footer p{margin:.4em 0}
+  .disclaimer{background:#fff8ec;border:1px solid #f1dfba;color:#7a5b14;border-radius:12px;padding:11px 14px;font-size:.84rem;margin:16px 0;text-align:left}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <h1>Rhodos-guide for hele familien 🇬🇷</h1>
+    <p>Aktiviteter og oplevelser tæt på Matoula Beach – og over hele øen. Filtrér efter hvem det passer til, hvor langt der er, og hvad I har lyst til.</p>
+    <span class="where">📍 Base: Matoula Beach, Ialysos (Ialyssos)</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="intro">
+    <h2>Sådan bruger I guiden</h2>
+    <p>Vælg en eller flere knapper for at filtrere. F.eks. <b>“Godt for børn”</b> + <b>“Kan nås uden bil”</b> viser kun det, der passer. Tryk på <b>“Vis på kort”</b> for at få ruten på telefonen.</p>
+    <p id="famline">Tilpasset en familie på 14 – heraf 4 børn (5–8 år) og 2 ældre, der tager den med ro. ☀️</p>
+  </section>
+
+  <!-- ---------- Filters ---------- -->
+  <details class="filterpanel" id="filterpanel">
+    <summary class="filtersummary">
+      <span>🔎 Filtrér aktiviteter</span>
+      <span class="count" id="count"></span>
+      <span class="chev">▼</span>
+    </summary>
+    <div class="filterbody">
+      <div class="filtergroup">
+        <div class="glabel">For hvem</div>
+        <div class="chips" id="g-who"></div>
+      </div>
+      <div class="filtergroup">
+        <div class="glabel">Afstand fra hotellet</div>
+        <div class="chips" id="g-dist"></div>
+      </div>
+      <div class="filtergroup">
+        <div class="glabel">Type</div>
+        <div class="chips" id="g-cat"></div>
+      </div>
+      <div class="filtermeta">
+        <button class="reset" id="reset" hidden>Nulstil filtre ✕</button>
+      </div>
+    </div>
+  </details>
+
+  <div id="zones"></div>
+
+  <div class="noresults" id="noresults">
+    <p style="font-size:2rem;margin:0">🤷</p>
+    <p>Ingen aktiviteter matcher de valgte filtre.<br>Prøv at fjerne et filter.</p>
+  </div>
+
+  <div class="disclaimer">
+    ⚠️ <b>Bemærk:</b> Priser, åbningstider og sæson er vejledende og kan ændre sig – <b>tjek altid på stedet eller online</b> før I tager afsted. Guiden er lavet til sommeren 2026.
+  </div>
+
+  <!-- ---------- Practical ---------- -->
+  <section class="practical" id="practical">
+    <h2>🧭 Praktisk til turen</h2>
+    <div id="practical-acc"></div>
+  </section>
+
+  <footer>
+    <p>Lavet med ❤️ til familieturen til Rhodos · sommer 2026</p>
+    <p>Kilder: bl.a. lokale turistsider, Tripadvisor, GetYourGuide, Discover Greece m.fl. Indhold er research-baseret og kvalitetstjekket, men tjek altid aktuelle priser/åbningstider.</p>
+  </footer>
+</main>
+
+<script>
+/* ============================================================
+   DATA — injiceres fra research. Hver aktivitet følger dette skema.
+   ============================================================ */
+const ACTIVITIES = [
+  {
+    "name_da": "Ialyssos Strand (Ialysos/Trianda Beach)",
+    "category": "strand",
+    "zone": "Tæt på hotellet",
+    "description_da": "Den lange strand lige nedenfor Matoula Beach Hotel har lavt, gradvist dybere vand og blød bund med sand og småsten – ideelt til de 5-8-årige, der kan soppe trygt. Bemærk: selve Kremasti Strand er mere stenet og ofte vindblæst, så Ialysos/Trianda-delen er det bedste rolige badevalg.",
+    "travel_from_ialysos": "0 km, lige ved Matoula Beach Hotel",
+    "needs_car": false,
+    "without_car_da": "Stranden ligger direkte ved hotellet - gå derhen.",
+    "season_da": "Hele året, badesæson maj-oktober",
+    "price_da": "Gratis (solseng/parasol ca. €8-12 pr. dag)",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Tag badesko med pga. sten. Bad om formiddagen mens vandet er roligt - eftermiddagsvinden giver bølger og er bedst til surfere. De ældre kan nyde en taverna ved strandkanten.",
+    "maps_query": "Ialysos Beach, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Windsurf & Kitesurf på Ialyssos Beach",
+    "category": "vandsport",
+    "zone": "Aktivt & adventure",
+    "description_da": "Ialyssos-bugten er et af Europas bedste begyndersteder for windsurf takket være den stabile termiske vind om eftermiddagen og fladt, lavvandet vand tæt på kysten. Flere veletablerede centre (bl.a. Procenter Rhodos og JP/NeilPryde-centret ved Blue Horizon Hotel) tilbyder undervisning og udlejning af moderne udstyr.",
+    "travel_from_ialysos": "Windsurf: 0-1 km på Ialyssos/Trianda Beach. Kitesurf: bedst ved Kremasti, ca. 3 km nord for hotellet",
+    "needs_car": false,
+    "without_car_da": "Skolerne ligger på selve Ialyssos-stranden i gåafstand fra hotellet.",
+    "season_da": "April-oktober, mest vind (meltemi) juni-september med spids i juli-august",
+    "price_da": "Begynderkursus typisk ca. €60-90; udstyrsleje ca. €40-60 for ½ dag - tjek aktuelle priser hos centeret",
+    "good_for_kids": false,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": true,
+    "tips_da": "Vinden er typisk stærkest om eftermiddagen - book formiddagslektioner hvis I er nybegyndere. Det er det helt rigtige sted for de friske familiemedlemmer, der vil lære at windsurfe lige uden for hotellet.",
+    "maps_query": "Kite Surf Ialysos, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Filerimos-bjerget: Klostret, Påfugle & Korsets Vej",
+    "category": "historie",
+    "zone": "Tæt på hotellet",
+    "description_da": "Et roligt klosterbjerg lige over Ialysos med snesevis af frie, tamme påfugle der går helt tæt på – et stort hit hos børn. For de ældre er der bænke, skygge fra cypresserne og et flot udsigtspunkt ud over nordvestkysten, som man kan nå med kun en kort, jævn gåtur fra parkeringen. Adgang til selve højen og udsigten er gratis.",
+    "travel_from_ialysos": "~5 km, ca. 10-15 min med bil op ad bjerget",
+    "needs_car": true,
+    "without_car_da": "Bedst med bil eller taxa (ca. €10-15 fra Ialysos). Lokalbussen (DES RODA) kører til Filerimos, men sjældent - tjek tider. Mange tager også en organiseret tur eller hop-on-hop-off.",
+    "season_da": "Sommer (ca. apr-okt): dagligt 8:00-20:00; vinter 8:30-15:30. LUKKET tirsdag. Tjek aktuelle tider",
+    "price_da": "Voksne €10, gratis for unge under 25; EU-borgere 65+ halv pris (€5) med ID. Selve Korsets Vej og korset er gratis",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "En af de få aktive/natur-oplevelser i denne liste, der også passer de to ældre: stierne er flade og korte. Påfuglene og det lille labyrint-anlæg er et hit hos børnene. Gå tidligt eller sidst på dagen for køligere luft.",
+    "maps_query": "Filerimos Monastery, Ialysos, Rhodes",
+    "top": true
+  },
+  {
+    "name_da": "Det Antikke Ialysos: Athena-templet & Den Doriske Fontæne",
+    "category": "historie",
+    "zone": "Tæt på hotellet",
+    "description_da": "På samme Filerimos-høj ligger ruinerne af den antikke akropolis Ialysos - bl.a. Athena Polias-templet (3.-2. årh. f.Kr.) og den imponerende doriske fontæne fra 300-tallet f.Kr. med løvehoved-vandspyr. Et roligt, historisk sted med flot udsigt over nordvestkysten.",
+    "travel_from_ialysos": "~5 km, ca. 10-15 min med bil (samme top som klostret)",
+    "needs_car": true,
+    "without_car_da": "Samme adgang som Filerimos kloster - bil, taxa eller den sjældne lokalbus. Ligger på samme arkæologiske område.",
+    "season_da": "Samme som Filerimos: sommer 8:00-20:00, vinter 8:30-15:30, LUKKET tirsdag. Den arkæologiske del kan lukke tidligere på dagen - tjek på stedet",
+    "price_da": "Indgår i Filerimos-billetten (voksne €10, under 25 gratis, 65+ €5)",
+    "good_for_kids": false,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Den doriske fontæne ligger ad en kort sidesti. Kombiner med klostret på samme besøg. Skyggefuldt om morgenen - rart for de ældre i sommervarmen.",
+    "maps_query": "Ancient Ialysos Acropolis, Filerimos, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Sommerfugledalen (Petaloudes / Valley of the Butterflies)",
+    "category": "natur",
+    "zone": "Tæt på hotellet",
+    "description_da": "En smuk, skyggefuld floddal tæt på Ialysos, berømt for sværme af sommerfugle om sommeren. Bemærk dog: den nederste del er let og flad, men ruten op er stejl med mange trapper, broer og ujævnt terræn – ikke egnet hele vejen for de gangbesværede ældre. Børn fra 5-8 år synes det er magisk, hvis man holder sig til den nederste del.",
+    "travel_from_ialysos": "~10 km, ca. 15-20 min med bil",
+    "needs_car": true,
+    "without_car_da": "Bedst med bil/taxa (ca. €20-25 hver vej). Der findes organiserede halvdagsture fra nordvestkysten, ofte kombineret med andre stop.",
+    "season_da": "Sommerfugle fra ca. midt-juni til midt-september, flest i juli-august. Åbent dagligt 8-18",
+    "price_da": "22. juni-30. sep: voksne €6, børn under 12 gratis. Apr-13. juni og oktober: €3",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Lad de ældre nyde den flade nederste del og caféen ved indgangen, mens resten af familien går op med børnene. Klap ikke for at få sommerfuglene til at flyve – det stresser dem. Gå om formiddagen i ydersæsonen, hvor der er flest.",
+    "maps_query": "Valley of the Butterflies Petaloudes, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Kremasti landsby & Panagia Kremasti-kirken",
+    "category": "historie",
+    "zone": "Tæt på hotellet",
+    "description_da": "Den hyggelige landsby Kremasti har en livlig hovedgade med butikker og tavernaer samt en af Rhodos' største og smukkeste kirker, Panagia Kremasti. Et autentisk, fladt og let tilgængeligt sted at slentre rundt og spise græsk.",
+    "travel_from_ialysos": "~3 km, ca. 5-10 min med bil",
+    "needs_car": false,
+    "without_car_da": "Lokalbussen mellem Rhodos by og Kremasti standser her ofte (samme rute som forbi Ialysos). Taxa ca. €7-10. Også gå-/cykelbar langs kysten.",
+    "season_da": "Hele året",
+    "price_da": "Gratis (kirke og landsby)",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Helt fladt og perfekt for de ældre. Hvis I er der 15.-23. august afholdes den store Panagia-festival med boder, tivoli for børn, mad, musik og dans om aftenen.",
+    "maps_query": "Panagia Kremasti Church, Kremasti, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Stamatiadis Mineralogi- & Palæontologimuseum",
+    "category": "historie",
+    "zone": "Tæt på hotellet",
+    "description_da": "Et lille, men fascinerende privat museum (det første af sin slags i Dodekaneserne) med en imponerende samling af mineraler og fossiler - bl.a. forstenede fisk fra Brasilien og et krokodillekranie fra Miocæn. En god indendørs aktivitet på en varm dag, og spændende for nysgerrige børn.",
+    "travel_from_ialysos": "~1-2 km, i Ialyssos (stueetagen af Perla Marina aparthotel)",
+    "needs_car": false,
+    "without_car_da": "Ligger i selve Ialyssos i gå-/kort taxaafstand fra hotellet.",
+    "season_da": "Åbent dagligt, typisk 10-15 og 18-20 - tjek aktuelle tider, da små private museer ofte ændrer åbningstid",
+    "price_da": "Lav entré, ca. €1-2 (kilder angiver €1) - bekræft ved indgangen",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Klimatiseret og fladt - ideelt for både de ældre og børnene midt på dagen når det er for varmt til strand. Besøget tager ca. 45-60 min. (Bemærk: Museet eksisterer og ligger i Perla Marina i Ialyssos. Prisen i input (ca. €5) er sandsynligvis for høj - kilder angiver ca. €1. Da det er et lille privat museum, bør både pris og åbningstider bekræftes lokalt. Lille, indendørs og let tilgængeligt - fint kort besøg ved dårligt vejr eller for de ældre.)",
+    "maps_query": "Stamatiadis Mineralogy and Paleontology Museum, Ialysos, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Kyststi & cykeltur langs nordvestkysten",
+    "category": "dagsudflugt",
+    "zone": "Aktivt & adventure",
+    "description_da": "Den flade kyststrækning fra Ialyssos via Kremasti mod Rhodos by er fin til en rolig gå- eller cykeltur med havudsigt. Der er cykeludlejning i Ialyssos, og ruten langs kysten er behagelig og nem - god familieaktivitet i den kølige morgen eller aften.",
+    "travel_from_ialysos": "Starter ved hotellet; ca. 8 km langs kysten til Rhodos by",
+    "needs_car": false,
+    "without_car_da": "Ingen bil nødvendig - lej cykler lokalt i Ialyssos eller gå langs kysten.",
+    "season_da": "Hele året, bedst tidlig morgen eller sen eftermiddag/aften om sommeren (undgå middagsheden)",
+    "price_da": "Cykel-/e-cykelleje ca. €8-20 pr. dag (RodosCycling i Ialyssos); gåtur gratis",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": true,
+    "tips_da": "Cykl tidligt på dagen i sommervarmen. Ruten er flad. De mindste børn kan sidde i barnestol/anhænger - spørg udlejeren. De ældre kan nøjes med en kort spadseretur ved strandpromenaden. (Bemærk: Cykeludlejning bekræftet - RodosCycling har base i Ialyssos og udlejer cykler, e-cykler og e-løbehjul. BEMÆRK: der er ikke en gennemgående dedikeret/adskilt kyst-cykelsti hele vejen til Rhodos by; ruten følger i høj grad kystvejen, så vær forsigtig med de 4 børn i trafikken. En rolig gå-/cykeltur på selve strandpromenaden tæt på hotellet er mere børne- og ældrevenlig end vejen ind til byen.)",
+    "maps_query": "RodosCycling, Ialysos, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Bloom Water Park (oppustelig vandpark)",
+    "category": "forlystelse",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "Rhodos' største oppustelige vandpark med kæmpe rutsjebaner, klatrevægge, trampoliner og forhindringsbaner ude på vandet ved Tsambika-stranden. Vild sjov for børn (med svømmefærdigheder) og voksne. Certificerede livreddere på vagt.",
+    "travel_from_ialysos": "~35-40 km, ca. 45-55 min med bil (Tsambika-stranden, østkysten - kræver kørsel forbi/uden om Rhodos by)",
+    "needs_car": true,
+    "without_car_da": "Ligger langt fra Ialysos på østkysten - reelt bil nødvendig. Alternativt KTEL-bus mod Tsambika/Lindos + gåtur, eller en organiseret udflugt.",
+    "season_da": "Sommersæson ca. maj-oktober, åbent dagligt fra kl. 10",
+    "price_da": "Hele dagen €30, 1 time €13; familietilbud findes (f.eks. 4 pers. 2 timer ca. €45). Børn skal kunne svømme og bære redningsvest",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Kun for børn der kan svømme og kan lide vand - de 5-årige er nok for små. Svømmevest udleveres. Et lukket pool-alternativ til de mindste kan være et nærmere hotel/poolområde. De ældre kan slappe af på Tsambika-stranden imens.",
+    "maps_query": "Bloom Water Park, Tsampika Beach, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Middelalderbyen i Rhodos by (UNESCO-gamleby)",
+    "category": "historie",
+    "zone": "Rhodos by",
+    "description_da": "Europas bedst bevarede middelalderlige bymidte og på UNESCOs verdensarvsliste. Slentr gennem de snørklede stræder inden for de mægtige fæstningsmure, kig på små butikker, caféer og gamle ridderhuse. Hele bydelen er en oplevelse i sig selv og kan nydes helt gratis.",
+    "travel_from_ialysos": "~8 km, ca. 15 min med bil. Uden bil: KTEL/RODA-bus fra Ialysos/Ixia til Rhodos by (busstation ved Mandraki/Nea Agora), afgang ca. hvert 15.-20. min, ~15-20 min, ca. 2,30 € pr. voksen. Derfra kort gåtur til gamlebyen.",
+    "needs_car": false,
+    "without_car_da": "Bybussen (DES RODA) fra Ialysos til Rhodos by kører hvert ca. 15. min, tager ~25 min og koster ~1,50-2 €. Taxa ~12-15 € hver vej.",
+    "season_da": "Hele året",
+    "price_da": "Gratis at gå rundt",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Brostenene er ujævne og kan være svære for de ældre og for klapvogne. Hold jer til de brede hovedstrøg (Sokratous-gaden) og find en café med stole, hvis benene bliver trætte. Gå tidligt om morgenen eller sidst på eftermiddagen for at undgå varmen og krydstogtsmængderne.",
+    "maps_query": "Medieval Old Town of Rhodes",
+    "top": true
+  },
+  {
+    "name_da": "Storsmesterens Palads (Palace of the Grand Master)",
+    "category": "historie",
+    "zone": "Rhodos by",
+    "description_da": "Et imponerende middelalderborg fra ridderordenens tid med store sale, mosaikgulve og udstillinger om Rhodos' historie. Selve byggeriet og udsigten over gamlebyen er højdepunktet.",
+    "travel_from_ialysos": "~8 km, ca. 15 min med bil. Uden bil: bus til Rhodos by + ca. 5-10 min gåtur op gennem gamlebyen.",
+    "needs_car": false,
+    "without_car_da": "Bybussen fra Ialysos til Rhodos by (~25 min, ~1,50-2 €), derefter ~10 min gang op gennem gamlebyen. Sidste stykke er brostensbelagt.",
+    "season_da": "Sommer (1. apr-31. okt): dagligt 08:00-20:00. Vinter (1. nov-31. mar): typisk 08:30-15:30, sidste indgang 15:00 (visse kilder angiver tirsdag lukket om vinteren - tjek på stedet).",
+    "price_da": "Voksen 20 € (gælder efter prisreformen fra 1. apr 2025). EU-borgere under 25 år gratis mod gyldigt ID; ikke-EU under 18 gratis.",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Der er trapper og brostensgårde inde i paladset, så det er ikke ideelt for gangbesværede ældre. Børnene synes ofte borgen er spændende ('en rigtig ridderborg'). Afsæt ca. 1-1,5 time.",
+    "maps_query": "Palace of the Grand Master, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Ridderhusenes Gade (Street of the Knights / Ippoton)",
+    "category": "historie",
+    "zone": "Rhodos by",
+    "description_da": "En af Europas smukkest bevarede middelaldergader, brolagt og kantet af de gamle 'herberger' (logier) for ridderordenens forskellige nationer. En kort, stemningsfuld spadseretur ned til Storsmesterens Palads.",
+    "travel_from_ialysos": "~8 km, ca. 15 min med bil. Uden bil: bus til Rhodos by + kort gåtur. Gaden ligger inde i gamlebyen ved paladset.",
+    "needs_car": false,
+    "without_car_da": "Bybussen til Rhodos by (~25 min), derefter kort gang ind i gamlebyen.",
+    "season_da": "Hele året",
+    "price_da": "Gratis",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Gaden er kort og forholdsvis jævn for at være gamleby, så den er overkommelig for de ældre i et roligt tempo. Den ligger lige ved både Det Arkæologiske Museum og paladset, så det er nemt at kombinere.",
+    "maps_query": "Street of the Knights, Rhodes Old Town",
+    "top": false
+  },
+  {
+    "name_da": "Det Arkæologiske Museum (i Ridderhospitalet)",
+    "category": "historie",
+    "zone": "Rhodos by",
+    "description_da": "Indrettet i ridderordenens gamle hospital fra 1400-tallet. Her ses bl.a. den berømte 'Afrodite fra Rhodos'-statue, gravfund og smykker i smukke gotiske sale med en rolig indre gård.",
+    "travel_from_ialysos": "~8 km, ca. 15 min med bil. Uden bil: bus til Rhodos by + kort gåtur ind i gamlebyen.",
+    "needs_car": false,
+    "without_car_da": "Bybussen til Rhodos by (~25 min), derefter kort gang gennem gamlebyen til Megalou Alexandrou-pladsen.",
+    "season_da": "Sommer (1. apr-31. okt): dagligt 08:00-20:00. Vinter (1. nov-31. mar): ons-man 08:30-15:30, tirsdag lukket.",
+    "price_da": "Standardbillet ca. 8 € (nedsat 4 €). Bemærk: nogle besøgende har i 2025 betalt op til 10 € - der findes også en kombibillet til 10 € (4 attraktioner). EU-borgere under 25 år gratis mod ID. Tjek aktuel pris på stedet.",
+    "good_for_kids": false,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Den indre gård og stueetagen er fine for de ældre at se i ro, men der er nogle trapper til øverste etage. Et godt køligt indendørs alternativ på en varm dag. (Bemærk: Åbningstider bekræftet. Prisen er rettet: input angav 10 €, men standardbilletten er normalt 8 € (nedsat 4 €); 10 € svarer typisk til kombibilletten. Kilderne er ikke entydige om dagsprisen i 2026, derfor medium tillid - bør tjekkes ved billetlugen.)",
+    "maps_query": "Archaeological Museum of Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Mandraki Havn med vindmøllerne og hjortesøjlerne",
+    "category": "historie",
+    "zone": "Rhodos by",
+    "description_da": "En afslappet, kort bådtur (ca. 45 min) fra den charmerende Mandraki-havn, hvor man fra komfortable sæder kigger ned gennem glasbunden på fisk og havbund – ofte med en dykker, der fodrer fiskene. Ingen anstrengelse: man sidder ned hele vejen, hvilket er ideelt for både børn (spændende) og ældre (roligt og tilgængeligt).",
+    "travel_from_ialysos": "~8 km, ca. 15 min med bil. Uden bil: KTEL/RODA-bus standser ved/nær Mandraki - ca. 15-20 min, ca. 2,30 €.",
+    "needs_car": false,
+    "without_car_da": "Bybussen til Rhodos by stopper tæt ved Mandraki (~25 min, ~1,50-2 €).",
+    "season_da": "Hele året",
+    "price_da": "Gratis",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Vælg den korte 45-min glasbundstur frem for lange heldagssejladser, så børnene ikke bliver utålmodige og de ældre ikke bliver trætte. Bestil en formiddagsafgang, hvor havet er roligst. Tag solhat og vand med.",
+    "maps_query": "Mandraki Harbour, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Rhodos Akvarium (Hydrobiologisk Station)",
+    "category": "forlystelse",
+    "zone": "Rhodos by",
+    "description_da": "Et lille, køligt og hyggeligt akvarium i en hulelignende kælder for enden af Mandraki-halvøen. Børnene elsker den mørke 'grotte'-stemning og røre-bassinet med skaller, og det er kort nok til korte koncentrationsspænd. Køligt og elevatortilgængeligt – en behagelig pause fra eftermiddagsvarmen, også for de ældre.",
+    "travel_from_ialysos": "~8 km, ca. 15-20 min med bil. Uden bil: bus til Rhodos by; akvariet ligger på øens nordspids, ca. 15-20 min gåtur fra Mandraki/busstationen langs kysten (eller kort taxitur).",
+    "needs_car": false,
+    "without_car_da": "Bybussen til Rhodos by, derefter gang langs Mandraki-promenaden ud til nordspidsen (~15-20 min) – eller en kort taxa.",
+    "season_da": "1. apr-31. okt: dagligt 09:00-20:30. Vinter (1. nov-31. mar): 09:00-16:30. Lukket nytårsdag, græsk påskesøndag og juledag.",
+    "price_da": "Voksen ca. 6 €, børn 5-18 år ca. 4,50 €. (Input angav 6,50 € - tæt på; mindre prisjustering kan forekomme.)",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Lille og hurtigt at se (30-45 min), god aircondition i sommervarmen og fladt/tilgængeligt – fungerer fint for både børn og ældre. Ligger ud til den nordlige strand.",
+    "maps_query": "Aquarium of Rhodes Hydrobiological Station",
+    "top": true
+  },
+  {
+    "name_da": "Den lille turisttog gennem Rhodos by",
+    "category": "forlystelse",
+    "zone": "Rhodos by",
+    "description_da": "En afslappet 45-minutters rundtur i et lille tog, der starter ved Mandraki havn, kører rundt om den middelalderlige bymur, op ad Monte Smith-højen til akropolis med flot udsigt over bugten og tilbage. Man ser hele byen uden at gå en meter – perfekt for både børn (sjovt at køre i tog) og ældre (al udsigten, ingen anstrengelse).",
+    "travel_from_ialysos": "~8 km, ca. 15 min med bil til Mandraki, hvorfra toget kører. Uden bil: bus til Rhodos by/Mandraki - toget starter bag hop-on hop-off-stoppet ved Mandraki; billetter købes på forhånd (f.eks. Aktaion-caféen).",
+    "needs_car": false,
+    "without_car_da": "Bybussen til Rhodos by; toget starter ved Aktaion-caféen i Mandraki.",
+    "season_da": "Sommersæsonen; kører ca. dagtimerne, afgang ca. hver time, varer ~45-60 min. Kan i perioder køre uregelmæssigt - tjek på stedet.",
+    "price_da": "Voksen ca. 9-12 € (prisen er steget fra tidligere ~7 €). Børnerabat oplyses på stedet.",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Perfekt løsning når benene er trætte – de ældre slipper for brostenene, og børnene elsker togturen. Bemærk: kræver ofte mindst 12 passagerer for afgang, men jeres gruppe på 14 fylder næsten selv et tog. (Bemærk: Toget kører fortsat, men prisen er rettet op: nyere anmeldelser (2025) nævner 9-12 € pr. voksen, ikke 7 €. Flere besøgende beretter om uregelmæssig drift / svært at finde toget - bekræft afgang og pris på stedet. God rolig aktivitet for både børn og ældre.)",
+    "maps_query": "Rhodes Town Tourist Train, Mandraki",
+    "top": true
+  },
+  {
+    "name_da": "Akropolis på Rhodos / Monte Smith (Apollontemplet & stadion)",
+    "category": "historie",
+    "zone": "Rhodos by",
+    "description_da": "Den antikke akropolis på Monte Smith-højen sydvest for byen med genrejste søjler fra Apollontemplet, et restaureret stadion og et lille odeon. Smuk udsigt over havet mod solnedgangen og helt gratis.",
+    "travel_from_ialysos": "~7-8 km, ca. 15 min med bil. Uden bil: ikke direkte busbetjent - nemmest med taxi fra Rhodos by, eller en del gåtur op ad bakken fra centrum (lang/kuperet - frarådes for de ældre uden transport).",
+    "needs_car": false,
+    "without_car_da": "Bybus nr. 5 (Monte Smith-linjen) fra Rhodos by, eller turisttoget der kører forbi. Taxa fra Ialysos ~15 €.",
+    "season_da": "Hele året, åbent arkæologisk område uden billetluge.",
+    "price_da": "Gratis",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Et åbent friluftsområde med stier på flad/let kuperet grund – overkommeligt for de ældre i roligt tempo. Tag hat og vand, da der er lidt skygge. Flot sted ved solnedgang. Børn kan løbe rundt på stadion.",
+    "maps_query": "Acropolis of Rhodes, Monte Smith",
+    "top": false
+  },
+  {
+    "name_da": "Bådtur fra Mandraki (Lindos, Symi eller badecruise)",
+    "category": "vandsport",
+    "zone": "Rhodos by",
+    "description_da": "Fra Mandraki sejler dagsture til Lindos, til naboøen Symi eller afslappede 'all inclusive' badecruise til bugter som Anthony Quinn Bay. En behagelig dag på vandet med svømmestop.",
+    "travel_from_ialysos": "~8 km, ca. 15 min med bil til Mandraki havn. Uden bil: bus til Mandraki; mange udbydere tilbyder også hotelafhentning fra Ialysos/Ixia.",
+    "needs_car": false,
+    "without_car_da": "Bybussen til Rhodos by/Mandraki, hvorfra bådene afgår. Book på forhånd online eller ved billetbåsene på havnen.",
+    "season_da": "Maj-oktober",
+    "price_da": "Typisk ~25-60 € pr. voksen afhængig af tur (Symi/Lindos heldagstur fra ~25-30 €); kortere bade-/glasbundscruise fra ~10-15 €. Børnerabat hos de fleste.",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Vælg en rolig badecruise frem for de hurtige speedbåde, så er det fint for de ældre. En glasbundsbåd er sjov og kort for børnene. Medbring solcreme, hat og badetøj; spørg om der er skygge og toilet ombord.",
+    "maps_query": "Mandraki Harbour boat trips, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Shopping og rolig byvandring i gamlebyen",
+    "category": "mad",
+    "zone": "Rhodos by",
+    "description_da": "Sokratous-gaden og sidegaderne byder på lædervarer, smykker, krydderier, keramik og souvenirs, blandet med tavernaer og isbutikker. En afslappet eftermiddag med shopping og en bid mad i hyggelige gårdhaver.",
+    "travel_from_ialysos": "~8 km, ca. 15 min med bil. Uden bil: bus til Rhodos by + kort gåtur.",
+    "needs_car": false,
+    "without_car_da": "Bybussen til Rhodos by (~25 min, ~1,50-2 €).",
+    "season_da": "Hele året",
+    "price_da": "Gratis at gå rundt; mad/drikke og indkøb efter behag",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Hovedstrøgene er bredere og lettere at gå på, men stadig brosten – tag bekvemme sko. Find en taverna med gårdhave, hvor de ældre kan sidde, mens andre handler. Mange isboder gør børnene glade.",
+    "maps_query": "Sokratous Street, Rhodes Old Town",
+    "top": false
+  },
+  {
+    "name_da": "Lindos – Akropolis, landsby, Skt. Paulus-bugten & æselridning",
+    "category": "historie",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "Rhodos' mest berømte landsby: hvide, bilfri stræder under en spektakulær antik akropolis på en klippe over to turkise bugter. Fra toppen er der panoramaudsigt over den hjerteformede Skt. Paulus-bugt – det mest fotograferede sted på øen. Æsler (kælet 'Lindos-taxa') kan bære én op ad de stejle gyder.",
+    "travel_from_ialysos": "~55 km, ca. 1 time 10 min med bil fra Ialysos",
+    "needs_car": true,
+    "without_car_da": "KTEL-bus fra rutebilstationen i Rhodos by til Lindos (kør først ind til byen, ca. 15-20 min med bybus fra Ialysos), derfra direkte bus ca. 1t 15-45m. Alternativt en organiseret dagstur/bådtur med hotelafhentning i Ialysos.",
+    "season_da": "Akropolis åben hele året; bedst maj–oktober. Sommer (apr.–okt.) dagligt 08:00-20:00; vinter (nov.–mar.) 08:30-15:30 og lukket tirsdag",
+    "price_da": "Akropolis voksen €20; EU-borgere under 26 og børn under 6 gratis. Æselridning ca. €8 pr. person (nogle udbydere tager €10 for et æselpar én vej – tjek på stedet)",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Selve opstigningen til akropolis er stejl, brostensbelagt og uden skygge – mindre egnet for de ældre og for små børn i middagsheden. Kom tidligt (åbner 08:00) for at undgå varme og krydstogtsmængder; medbring vand, hat og gode sko. Bemærk nyt tidsbestemt billetsystem i 2026.",
+    "maps_query": "Acropolis of Lindos, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Faliraki Water Park (Grækenlands største)",
+    "category": "forlystelse",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "Et kæmpe, moderne vandland med et helt område kun til de mindste: lave bassiner, mini-rutsjebaner og vandlegeplads til 3-12-årige, plus skyggeområder og solsenge. Børnene kan boltre sig en hel dag, mens de voksne skiftes til at slappe af. Det er den oplagte 'kun for børnene'-dag.",
+    "travel_from_ialysos": "~22 km, ca. 30 min med bil fra Ialysos",
+    "needs_car": false,
+    "without_car_da": "KTEL-bus mod Faliraki (skift evt. i Rhodos by); bussen kører hyppigt og holder tæt på. Mange afhentningstilbud findes også via billetudbydere.",
+    "season_da": "4. maj – 26. oktober 2026. Åbent 10:00-18:00 (maj/sep/okt), 10:00-18:30 (juni-aug)",
+    "price_da": "1-dags: voksen (12+) €30, børn 3-12 €20, under 3 gratis. Rabat på 2- og 3-dages billetter",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Kom ved åbningstid og find skygge tidligt. Tag badesko, solcreme og hat – det meste er i fuld sol. De ældre vil ikke trives her en hel dag i varmen; lad dem evt. blive ved hotellet eller mødes til frokost et køligere sted.",
+    "maps_query": "Faliraki Water Park, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "De Syv Kilder (Epta Piges)",
+    "category": "natur",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "En grøn, skyggefuld skovoase med en lille sø, små broer, ænder, påfugle, geder og en lille legeplads – og mærkbart køligere end kysten. Gåturen er let og flad, så de ældre kan nyde naturen og en taverna i skyggen, mens børnene jagter ænder og kigger på dyrene. Et perfekt frikvarter fra strand og varme.",
+    "travel_from_ialysos": "~37 km, ca. 45 min med bil fra Ialysos (5 km indland fra Kolymbia)",
+    "needs_car": true,
+    "without_car_da": "Svært uden bil. Bus til Kolymbia og derfra ca. 4-5 km til fods/taxi, eller en organiseret udflugt. Bil eller tur anbefales.",
+    "season_da": "Åbent hele året, gratis adgang; skønnest forår–efterår",
+    "price_da": "Gratis adgang og parkering (taverna betales separat)",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Børn elsker tunnelen og påfuglene - medbring lommelygte/telefonlygte og fødder/sko der må blive våde. Tunnelen er smal, mørk og lav, så ikke for de ældre eller klaustrofobiske; de kan i stedet gå den lette sti udenom og vente ved tavernaen.",
+    "maps_query": "Seven Springs Epta Piges, Rhodes",
+    "top": true
+  },
+  {
+    "name_da": "Kallithea-kilderne (Terme Kallithea)",
+    "category": "historie",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "Et af Rhodos' smukkeste steder: et restaureret italiensk kuranlæg med palmer, rotunder, mosaikker og skyggefulde haver omkring en lille bugt med krystalklart vand. Perfekt rolig, 'spa-agtig' ramme for de ældre med bænke, skygge og en strandcafé, mens børnene kan soppe i det lave, beskyttede vand i bugten.",
+    "travel_from_ialysos": "~18 km, ca. 25-30 min med bil fra Ialysos",
+    "needs_car": false,
+    "without_car_da": "KTEL-bus mod Faliraki/Kallithea stopper i nærheden; eller taxi fra Rhodos by (ca. 20 min). Også en del af mange bådture.",
+    "season_da": "Åbent dagligt i sæsonen, typisk ca. 08:00-20:00 (kortere uden for sæson). Tjek aktuelle tider på kallitheasprings.com",
+    "price_da": "Voksen €5, børn 12-18 €3, under 12 gratis",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "Gå tidligt for at få en skyggeplads i haverne. Bugten har lavt, roligt vand – godt til de mindste. Solsenge/parasoller kan lejes, og der er café, toiletter og gratis parkering. Tag badesko, da bunden er stenet nogle steder.",
+    "maps_query": "Kallithea Springs, Rhodes",
+    "top": true
+  },
+  {
+    "name_da": "Tsambika-stranden",
+    "category": "strand",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "En af Rhodos' smukkeste sandstrande: ca. 1,5 km fint gyldent sand, turkis vand og en blød, lavvandet bund der skråner langsomt – ideelt for små børn. Solsenge, parasoller, vandsport og strandbarer.",
+    "travel_from_ialysos": "~35 km, ca. 40-45 min med bil fra Ialysos",
+    "needs_car": true,
+    "without_car_da": "KTEL-bus mod Lindos/Archangelos sætter af ved hovedvejen, men derfra er der ca. 1,5-2 km ad en bivej ned til stranden (varmt til fods). Bil eller taxi anbefales.",
+    "season_da": "Bedst maj–oktober",
+    "price_da": "Gratis adgang og gratis parkering; solseng+parasol typisk ca. €20-30 pr. sæt (2 senge + parasol) i højsæsonen, forreste række kan koste €30-40",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "Det lave, rolige vand er perfekt til 5-8-årige. De ældre kan blive på stranden i en solseng under parasol – ingen krav om at bestige klosteret. Stranden bliver fyldt og varm midt på dagen, så kom tidligt.",
+    "maps_query": "Tsambika Beach, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Tsambika-klosteret (Panagia Tsambika)",
+    "category": "historie",
+    "zone": "Aktivt & adventure",
+    "description_da": "Et lille hvidt kloster højt på en klippe med 360-graders panorama over kysten fra Kolymbia til Lindos. Det nås via ca. 300 trin op ad bjerget – belønningen er en af øens flotteste udsigter.",
+    "travel_from_ialysos": "~34 km, ca. 40 min med bil fra Ialysos + ca. 300 trin til fods op til klosteret",
+    "needs_car": true,
+    "without_car_da": "Praktisk talt kun med bil/taxi til foden af trappen; derefter ca. 300 trin op. Ingen direkte offentlig transport til selve klosteret.",
+    "season_da": "Åbent hele året i dagtimerne; bedst tidligt om morgenen pga. varme",
+    "price_da": "Gratis",
+    "good_for_kids": false,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "De ca. 300 trin er stejle og uden skygge – ikke egnet for de ældre og hårdt for små børn i heden. Gå op tidligt om morgenen, tag rigeligt vand med. Skuldre/knæ skal være dækket ved selve kapellet.",
+    "maps_query": "Tsambika Monastery, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Anthony Quinn-bugten",
+    "category": "vandsport",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "En lille, dramatisk klippebugt med kontrastrigt grøn-blåt, krystalklart vand – øens bedste snorkelsted med klipper, småhuler og masser af fisk. Opkaldt efter skuespilleren Anthony Quinn.",
+    "travel_from_ialysos": "~25 km, ca. 35 min med bil fra Ialysos (nær Faliraki/Ladiko)",
+    "needs_car": true,
+    "without_car_da": "Bus til Faliraki og derefter taxi/gåtur (et par km ad bakket vej), eller via bådtur. Bil gør det nemmest pga. den stejle vej ned.",
+    "season_da": "Åben hele året, gratis; bedst maj–oktober for snorkling",
+    "price_da": "Gratis adgang; solseng typisk ca. €30 pr. sæt (2 senge + parasol), enkelte ca. €15/stk",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Mest klippe-/stenstrand med stejl tilkørsel – ikke ideelt for de ældre eller helt små. Snorkleudstyr og vandsko er et must. Kom meget tidligt; den lille bugt og parkeringen fyldes hurtigt.",
+    "maps_query": "Anthony Quinn Bay, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Det antikke Kamiros",
+    "category": "historie",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "Den bedst bevarede af Rhodos' tre antikke byer – ofte kaldt 'det dorisk-græske Pompeji'. Et stort, roligt udgravningsfelt med gader, huse, et tempel og en agora ned ad en grøn skråning mod havet, langt mindre overrendt end Lindos.",
+    "travel_from_ialysos": "~25 km, ca. 30 min med bil fra Ialysos (sydvest langs vestkysten)",
+    "needs_car": true,
+    "without_car_da": "Vestkyst-KTEL-bus mod Kamiros/Skala Kamirou stopper ved indgangen, men kører få gange dagligt – tjek tider nøje. Bil eller udflugt er mere fleksibelt.",
+    "season_da": "Fra 1. april dagligt 08:00-20:00; vinter (1. nov.–31. mar.) 08:30-15:30, lukket tirsdag",
+    "price_da": "Voksen €10; EU under 25 gratis; 63+/65+ halv pris (€5)",
+    "good_for_kids": false,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": true,
+    "tips_da": "Området er kuperet med trapper og næsten ingen skygge – tungt for de ældre og for små børn i heden. Til gengæld tæt på Ialysos. Besøg tidligt eller sidst på dagen, tag hat og vand med.",
+    "maps_query": "Ancient Kamiros, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Symi – bådudflugt til naboøen",
+    "category": "dagsudflugt",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "En heldags bådtur til den lille naboø Symi, kendt for sin postkort-smukke havneby Gialos med pastelfarvede nyklassiske huse i et amfiteater rundt om havnen. De fleste ture badestopper i den smukke Skt. Georgs-bugt undervejs.",
+    "travel_from_ialysos": "Bådafgang fra havnen i Rhodos by (~8 km / 15-20 min fra Ialysos); selve sejladsen ca. 45 min (hurtigbåd) til ca. 1-1,5 t (almindelig båd) hver vej",
+    "needs_car": false,
+    "without_car_da": "Mange ture tilbyder gratis hotelafhentning i Ialyssos; ellers tag bybus/taxi til havnen i Rhodos by. Ingen bil nødvendig.",
+    "season_da": "Daglige afgange i sommersæsonen (typisk april/maj–oktober), dagsbåde afgår typisk ca. kl. 09:00-10:30, retur sidst på eftermiddagen/først på aftenen",
+    "price_da": "Typisk ca. €30-45 pr. voksen for dagskrydstogt med traditionel båd; hurtigbåd/ferry kan være dyrere. Børn ofte rabat, småbørn gratis (pris varierer pr. udbyder)",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "En lang men afslappet dag der passer alle – de ældre kan blive ombord/på cafe i havnen mens børnene bader ved Skt. Georgs-bugt. Vælg en større, stabil båd, tag solcreme, hat og badetøj med. Kan blive varmt på dækket midt på dagen. (Bemærk: Bekræftet at daglige dagsudflugter til Symi sejler i sommeren 2026 fra Rhodos by-havn (Mandraki/Kolona), afgang typisk formiddag. Sejltid varierer: hurtigbåd ca. 45 min, traditionel dagsbåd ca. 1-1,5 t. Priser svinger meget pr. udbyder (~€30-45+ for traditionel dagstur) – book på forhånd og bekræft retur-tid. Lang dag, men passiv og rolig, så velegnet til både ældre og børn.)",
+    "maps_query": "Symi Town, Greece",
+    "top": false
+  },
+  {
+    "name_da": "Embonas vinlandsby & Emery Winery",
+    "category": "mad",
+    "zone": "Aktivt & adventure",
+    "description_da": "Rhodos' vigtigste vinlandsby højt oppe (over 800 m) på skråningen af bjerget Attaviros. Her ligger Emery Winery (grundlagt 1923), et af Grækenlands ældste og største vinhuse, med rundvisning og smagning. Bjerglandsbyen har autentiske tavernaer med grillet kød.",
+    "travel_from_ialysos": "~45-50 km, ca. 55-60 min med bil fra Ialysos op i bjergene",
+    "needs_car": true,
+    "without_car_da": "Meget svært uden bil – ingen praktisk offentlig transport. Bedst med lejebil eller en organiseret vintur med hotelafhentning (mange tilbyder gratis pickup i Ialyssos/Ixia).",
+    "season_da": "Emery Winery har smagningsrum åbent dagligt, typisk ca. 11:00-17:00 (tjek aktuelle tider på emery.gr); landsbyen skønnest forår–efterår",
+    "price_da": "Smagning hos Emery er typisk gratis/billig; organiserede vinture ca. €40-70 pr. person",
+    "good_for_kids": false,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "En rolig kulturdag der passer de ældre (siddende smagning, kølig bjergluft, taverna-frokost) mens børnene kun har begrænset underholdning. Vælg en vintur med chauffør, så de voksne kan smage. Bjergvejen er snoet – tag evt. kvalmemiddel til bilsyge børn.",
+    "maps_query": "Emery Winery, Embonas, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Faliraki strand & feriebyen",
+    "category": "strand",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "Næsten 5 km lang, bred sandstrand med blødt gyldent sand, roligt og lavvandet vand samt al tænkelig service: solsenge, strandbarer, restauranter, vandsport og legepladser. Rhodos' mest familievenlige feriested med liv og masser at lave.",
+    "travel_from_ialysos": "~22 km, ca. 30 min med bil fra Ialysos",
+    "needs_car": false,
+    "without_car_da": "KTEL-bus kører meget hyppigt (ca. hvert 20. min) til Faliraki; busstop ca. 60 m fra stranden. Ingen bil nødvendig.",
+    "season_da": "Bedst maj–oktober",
+    "price_da": "Gratis adgang til stranden; solseng+parasol typisk ca. €10-15 pr. sæt (kan være højere ved organiserede beach bars)",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "Det lavvandede, rolige vand og den brede strand er ideelt for både børn og ældre, og der er masser af caféer og toiletter tæt på. Den lange strand betyder man altid kan finde en roligere plet væk fra barerne. (Bemærk: Faliraki er en velkendt, aktiv feriestrand der bestemt er åben i 2026. Hovedstranden er lang og sandet med let adgang – god til både børn og ældre. Solseng-priser varierer: ca. €10-15/sæt på den åbne strand, men beach bars/clubs kan tage mere. Feriebyen er livlig (barer, restauranter, vandaktiviteter) – nogle dele er meget festorienterede om aftenen.)",
+    "maps_query": "Faliraki Beach, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Windsurf & kitesurf-eldorado ved Prasonisi (det sydligste punkt)",
+    "category": "vandsport",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "Prasonisi er en smal sandtange på Rhodos' sydspids, hvor to have mødes: fladt lagunevand på den ene side (perfekt for begyndere) og bølger på den anden (for øvede). Et af Europas mest berømte surfspots med flere skoler og over 30 års erfaring. En oplevelse i sig selv at se, selv hvis man ikke surfer.",
+    "travel_from_ialysos": "~85-95 km, ca. 1 time 30 min - 2 timer med bil hver vej (kræver bil eller organiseret tur)",
+    "needs_car": true,
+    "without_car_da": "Reelt kun muligt med lejebil pga. afstanden; offentlig bus til sydspidsen er upraktisk. Nogle surfskoler/rejsebureauer kan arrangere transfer mod betaling.",
+    "season_da": "Maj til midt oktober; kraftigst vind juni-august (5-6 Beaufort)",
+    "price_da": "Udstyrsleje fra ~25-30 €/time eller dagspakker; lektioner windsurf fra ~60 €, kite fra ~150 €. Tjek aktuel prisliste hos ProCenter Prasonisi",
+    "good_for_kids": false,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Lang køretur, så gør det til en heldagsudflugt. Tangen kan være helt oversvømmet i højsæson. Ikke egnet som ren badedag for små børn pga. vind og strøm - tag hellere til Ialyssos for de yngste.",
+    "maps_query": "Prasonisi Beach, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Dykning for begyndere & PADI Bubblemaker for børn (Rhodes Diving Academy / H2O)",
+    "category": "vandsport",
+    "zone": "Rhodos by",
+    "description_da": "Prøvedyk for voksne/teenagere og det særlige PADI Bubblemaker-program for børn fra 8 år, hvor de prøver at trække vejret under vand på lavt, kontrolleret dyb. En tryg introduktion til undervandsverdenen med erfarne instruktører.",
+    "travel_from_ialysos": "Rhodes Diving Academy ligger i Kallithea (~15-20 km, ca. 25-30 min med bil); teori i dykkercenter, selve dykket ved Kavourakia-stranden i Kallithea. Båd-baserede dyk afgår typisk fra Mandraki-havnen i Rhodos by (~8-12 km)",
+    "needs_car": false,
+    "without_car_da": "Tag bybussen (linje fra Ialyssos/Trianda til Rhodos by, ~1,80 €) eller taxa til dykkercentrets mødested ved havnen; mange centre sejler ud fra Mandraki/Kolymbia.",
+    "season_da": "April-november; vandet varmest juni-oktober",
+    "price_da": "PADI Bubblemaker for børn fra ~80 €; prøvedyk for voksne typisk ~70-90 €",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Bubblemaker er for børn fra 8 år - så de ældste af jeres børn (8-årige) kan netop deltage. Book på forhånd; programmet afvikles kun bestemte ugedage. (Bemærk: VIGTIGT: PADI Bubblemaker har minimumsalder 8 år - kun det/de ældste barn/børn i gruppen (8 år) kan deltage, de 5-7-årige kan IKKE. Rhodes Diving Academy ligger i Kallithea (ikke Rhodos by) og kører Bubblemaker ons/tor/søn. Bekræft alder, dag og aktuel pris direkte ved booking. Uden bil: bus mod Faliraki via Kallithea.)",
+    "maps_query": "Rhodes Diving Academy, Mandraki Harbour, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Vandsport ved Faliraki: jetski, parasailing, banantur & SUP",
+    "category": "vandsport",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "Faliraki-stranden er øens vandsport-centrum med jetski, parasailing (flyv i faldskærm bag en båd), banantur, oppustelige ringe og SUP-boards. Mange operatører (Sotos, Smile, Faliraki Watersports m.fl.) side om side på stranden. Parasailing kan tages med en voksen, så lidt ældre børn kan flyve med.",
+    "travel_from_ialysos": "~20-25 km, ca. 30 min med bil. UDEN bil: ingen direkte bus fra Ialysos - kræver skift i Rhodos by (RODA-bus Ialysos→Rhodos by, derefter KTEL-bus Rhodos by→Kallithea→Faliraki, hver ~2,40 €, afgang ca. hvert 20. min)",
+    "needs_car": false,
+    "without_car_da": "Bybus fra Rhodos by til Faliraki (skift evt. fra Ialyssos-bussen i byen), ~2,50-3 € hver vej; eller taxa ~30-35 € hver vej.",
+    "season_da": "Maj-oktober (højsæson juni-september)",
+    "price_da": "Jetski fra ~50 €; parasailing ~40-60 € pr. person; banantur ~15-20 €; SUP-leje ~10-15 €/time (priser varierer mellem operatører)",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Parasailing er mild nok til, at en voksen kan flyve med et større barn - tjek aldersgrænser hos operatøren. SUP på roligt vand er sjovt for hele familien. Jetski kræver typisk 18 år for selv at køre.",
+    "maps_query": "Sotos Watersports, Faliraki Beach, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Jeep-safari eller buggy-safari i bjergene",
+    "category": "forlystelse",
+    "zone": "Aktivt & adventure",
+    "description_da": "Kør selv en Suzuki Jimny i kolonne efter en guide ad grusveje gennem bjerge og skove, eller lad guiden køre i en aircondition-jeep, mens I nyder turen. Buggy-safari (fra Kolymbia) er et endnu vildere alternativ. Stop ved landsbyer, udsigtspunkter og ofte frokost undervejs.",
+    "travel_from_ialysos": "Ialyssos-området (nord/vestkyst, mellem Rhodos by og Fanes) er normalt i operatørernes afhentningszone - bekræft hotelafhentning ved booking. Ellers ~20-40 min til mødested",
+    "needs_car": false,
+    "without_car_da": "De fleste safari-firmaer (Bumpy Rhodes, Manos Going m.fl.) tilbyder gratis hotelafhentning på nordkysten, herunder Ialyssos/Kremasti-området - bekræft ved booking.",
+    "season_da": "April-oktober",
+    "price_da": "Guidet jeep-safari fra ~40-75 € pr. voksen (passager billigst); selvkør 4x4 Suzuki Jimny dyrere; ATV/quad-tur fra ~70-80 €",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Børn må sidde med som passagerer i jeep-safari (god familieoplevelse). Vælg den guidede passager-jeep frem for selvkør, hvis I vil have det afslappet. Tag støvet tøj på og sikker hovedbeklædning.",
+    "maps_query": "Bumpy Rhodes Jeep Safari, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Vandretur på Profitis Ilias (fra Salakos)",
+    "category": "natur",
+    "zone": "Aktivt & adventure",
+    "description_da": "En af øens letteste og smukkeste vandreture - en gradvis stigning ad velholdte skovstier fra landsbyen Salakos op mod Profitis Ilias (798 m), forbi italiensk-tidens villaer og den lille byzantinske kirke. Ca. 5,5 km med skygge fra tæt fyrreskov og havudsigt.",
+    "travel_from_ialysos": "~35-45 km til Salakos, ca. 50-60 min med bil. Reelt kun tilgængelig med bil eller organiseret tur med afhentning (begrænset/ingen praktisk offentlig bus)",
+    "needs_car": true,
+    "without_car_da": "Svært uden bil; meget begrænset bus til Salakos. Bedst som lejebil eller via guidet vandretur med afhentning fra nordkysten.",
+    "season_da": "Hele året; bedst forår og efterår. Om sommeren: gå tidligt - stien er dog mest skygget af pinje/cypres, så overkommelig",
+    "price_da": "Gratis på egen hånd; guidet tur typisk ~40-60 € pr. person (3,5-5,5 timer, ofte fælles tur onsdag)",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Stien er blød og egnet for friske børn, men 5,5 km er for langt for de yngste og for de ældre. Start tidligt om morgenen i sommervarmen og medbring rigeligt vand.",
+    "maps_query": "Salakos to Profitis Ilias trailhead, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Hesteridning ved stranden (Fivos / Rocking Horse Ranch, Faliraki)",
+    "category": "forlystelse",
+    "zone": "Aktivt & adventure",
+    "description_da": "Rolige rideture for både begyndere og børn gennem olivenlunde og langs - eller helt ud i - havet ved Faliraki/Afandou. Rancherne tager imod ryttere fra ca. 3 år og forklarer alt fra bunden, så ingen erfaring kræves.",
+    "travel_from_ialysos": "Fivos ligger nær Faliraki (~20-25 km, ca. 30 min med bil). Uden bil kræver det busskift via Rhodos by - upraktisk; ranchen tilbyder evt. afhentning, spørg ved booking",
+    "needs_car": false,
+    "without_car_da": "Bus til Faliraki + kort taxa, eller direkte taxa fra Ialyssos (~30-35 €). Nogle ranches/bureauer tilbyder afhentning mod betaling - spørg ved booking.",
+    "season_da": "Hele året; om sommeren rid tidligt morgen/sen eftermiddag pga. varmen",
+    "price_da": "Pris ikke offentligt bekræftet for 2025/2026 - kontakt Fivos direkte (WhatsApp/e-mail). Strandtur ~1 time 15 min. Regn med omkring ~45-55 € pr. person som vejledende",
+    "good_for_kids": true,
+    "good_for_elderly": false,
+    "active": true,
+    "near_hotel": false,
+    "tips_da": "Perfekt for børnene (fra 3 år med voksen) og for de mindre erfarne voksne, da turene er rolige. Book morgen- eller aftenhold for at undgå middagsheden. Lange bukser og lukkede sko anbefales. (Bemærk: Fivos Horse Riding bekræftet aktiv nær Faliraki (rider gennem olivenlunde og ned til Afandou-stranden, ~1t15min). Kunne IKKE bekræfte nøjagtig pris online - tjek direkte. BEMÆRK: blandede anmeldelser (nogle om vanskelige heste/sikkerhed) - spørg om rolige heste til børn og minimumsalder. Ikke egnet for de 2 ældre. 'Rocking Horse Ranch' ikke separat bekræftet - hovedudbyder er Fivos.)",
+    "maps_query": "Fivos Horse Riding, Faliraki, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "U-bådstur / glasbundsbåd fra Mandraki-havnen",
+    "category": "dagsudflugt",
+    "zone": "Rhodos by",
+    "description_da": "Semi-ubåd / glasbundsbåd, der sejler ud fra Mandraki-havnen med en undervandskabine med store vinduer, hvor man tørt kan se fisk og havbund langs de middelalderlige bymure. Korte ture (~45 min) hver time - ideel for børn, der vil se livet under vandet uden at blive våde.",
+    "travel_from_ialysos": "~8-12 km til Mandraki-havnen i Rhodos by, ca. 15-20 min med bil. UDEN bil: RODA-bus fra Ialysos til Rhodos by (~15-20 min), derefter kort gang til Mandraki - fint tilgængeligt uden bil",
+    "needs_car": false,
+    "without_car_da": "Bybus fra Ialyssos/Trianda til Rhodos by (~1,80 €) og kort gåtur til Mandraki-havnen, hvor bådene ligger; nemt uden bil.",
+    "season_da": "April-oktober (daglige afgange i højsæsonen)",
+    "price_da": "Voksen typisk ~17-35 €; børn billigere (nogle udbydere fra ~10 €). 45-minutters tur med dykkershow og bymur-udsigt",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "En af de få aktiviteter, der passer ALLE - også de to ældre og de små børn - da man sidder ned og holder sig tør. Kombiner let med en bytur i Rhodos gamle by. Vælg en tur med glaskabine/undervandsvinduer for børnenes skyld.",
+    "maps_query": "Mandraki Harbour submarine glass bottom boat, Rhodes",
+    "top": true
+  },
+  {
+    "name_da": "Solnedgangsmiddag på strandtaverna i Ialysos/Trianda",
+    "category": "mad",
+    "zone": "Tæt på hotellet",
+    "description_da": "Langs Ialysos' strandpromenade ligger en række tavernaer og restauranter med borde tæt på vandet, hvor man kan spise græsk mad mens solen går ned over Det Ægæiske Hav i guld og lilla. Rolig stemning hele familien på 14 kan gå til til fods – perfekt for de ældre, der ikke skal køre.",
+    "travel_from_ialysos": "0–1 km, gåafstand langs strandpromenaden",
+    "needs_car": false,
+    "without_car_da": "Gåafstand fra hotellet langs den flade strandpromenade.",
+    "season_da": "Hele året, men strandtavernaerne er bedst maj–oktober",
+    "price_da": "Hovedret ca. €10–18 pr. person; meze til deling billigere",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Ring og reservér et langbord til 14 personer i god tid, og bed om bord nær vandkanten til solnedgang (typisk ca. kl. 20.30 i højsommeren). Promenaden er flad og kørestols-/rollatorvenlig.",
+    "maps_query": "Ialysos beachfront tavernas, Ialysos, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Autentisk taverna-aften i Kremasti landsby (O Mponiatis / souvlaki)",
+    "category": "mad",
+    "zone": "Tæt på hotellet",
+    "description_da": "I Kremasti landsby finder I ægte græske grillhuse som O Mponiatis (familiedrevet siden 1986) og O Giannis Souvlaki ved landsbypladsen – kulgrillet souvlaki, gyros og meze i en livlig, lokal atmosfære som rhodianerne selv besøger. Uhøjtidelig og hyggelig for både børn og ældre.",
+    "travel_from_ialysos": "Ca. 2–3 km fra hotellet (gåafstand eller kort taxa)",
+    "needs_car": false,
+    "without_car_da": "Kan nås til fods fra Ialysos (ca. 25-30 min) eller med kort taxatur (ca. €6–8). RODA-bussen mod Kremasti standser også i landsbyen.",
+    "season_da": "Hele året (lokalt åbent også uden for sæsonen)",
+    "price_da": "Souvlaki/gyros pita ca. €3–5; fuld tallerken ca. €10–14",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": true,
+    "tips_da": "Gå tidligt eller reservér – stedet er populært blandt lokale om aftenen. Souvlaki og pommes er sikre favoritter hos børnene. Bestil meze til deling for den ægte oplevelse.",
+    "maps_query": "O Mponiatis souvlaki, Kremasti, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Skypark Faliraki – indendørs legeland, bowling & minigolf (hedebølge-backup)",
+    "category": "forlystelse",
+    "zone": "Sydpå & dagsudflugter",
+    "description_da": "Stort underholdningscenter i hjertet af Faliraki med 12 bowlingbaner, 18-hullers glow-minigolf, videospil, poolborde og det indendørs legeland Bubble Land (oppustelig legeplads + klatrevæg) til børn op til ca. 10 år. Aircondition gør det til det perfekte køligt alternativ på meget varme dage eller i regn – og minigolfen er lavintensiv, så alle aldre kan være med.",
+    "travel_from_ialysos": "Ca. 20 km, ca. 30-35 min med bil",
+    "needs_car": true,
+    "without_car_da": "Tag RODA-bussen til Rhodos by og skift til KTEL-bussen mod Faliraki (samlet ca. 1-1,5 time), eller tag taxa (ca. €30–40 hver vej). Bil eller forudbestilt taxa anbefales til 14 personer.",
+    "season_da": "Hele året; indendørsdelen er åben uanset vejr",
+    "price_da": "Minigolf ca. €6–8 pr. person; bowling ca. €6–8 pr. spil; Bubble Land entré ca. €6–8 pr. barn",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "Den indendørs aircondition-del er guld værd ved hedebølge. Bubble Land kræver højde under 1,50 m. Minigolfen er flot om aftenen med neonlys – og de ældre kan sidde i café-baren imens børnene leger.",
+    "maps_query": "Skypark Faliraki, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Eftermiddags-is og granita i Rhodos gamleby",
+    "category": "mad",
+    "zone": "Rhodos by",
+    "description_da": "Køling i varmen hos en af gamlebyens gelaterier – fx Gelateria dei Greci i den middelalderlige bydel, Gelato Punto nær Elli Beach eller Gelatiamo i centrum, med håndlavet italiensk is, sorbet og granita. En lille, sikker børnefavorit, og et hyggeligt stop på en bytur.",
+    "travel_from_ialysos": "Ca. 8 km til Rhodos by, ca. 15-20 min med bil",
+    "needs_car": false,
+    "without_car_da": "RODA-bus fra Ialysos til Rhodos by (ca. 20-30 min), derefter kort gåtur til gamlebyen. Eller taxa ca. €12–15.",
+    "season_da": "Hele året; flest åbne maj–oktober",
+    "price_da": "Kugle is ca. €2–3; granita ca. €3–4",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "Et perfekt pausestop midt på en varm sightseeing-dag i gamlebyen. Søg skygge i de smalle stræder. Granita (frossen frugtdrik) er forfriskende for de ældre, der ikke vil have tung is.",
+    "maps_query": "Gelateria dei Greci, Old Town, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Rodini Park – skyggefuld naturpark med påfugle ved Rhodos by",
+    "category": "natur",
+    "zone": "Rhodos by",
+    "description_da": "En af verdens ældste anlagte parker, kun ca. 3 km fra Rhodos bycentrum. En kølig, grøn korridor under tætte platantræer og pinjer langs en lille bæk, hvor påfugle, ænder og gæs går frit omkring. Gratis, fladt og roligt – ideelt for både ældre og børn på en varm dag.",
+    "travel_from_ialysos": "Ca. 10 km, ca. 15-20 min med bil",
+    "needs_car": false,
+    "without_car_da": "RODA-bus til Rhodos by og kort taxa/bus videre, eller taxa direkte fra Ialysos ca. €13–16. Kan også nås til fods fra bycentrum (ca. 30-40 min).",
+    "season_da": "Bedst forår–efterår; tjek aktuelle åbningstider lokalt, da parken har været delvist lukket for renovering i perioder",
+    "price_da": "Gratis",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "Skyggen gør den til et af de svaleste steder ved Rhodos by på en hedebølgedag. Børnene elsker påfuglene. Stierne er nogenlunde flade, men tag bekvemt fodtøj. Bekræft at parken er åben inden besøg.",
+    "maps_query": "Rodini Park, Rhodes",
+    "top": false
+  },
+  {
+    "name_da": "Solnedgang fra Monte Smith med udsigtscafé (siddevenlig)",
+    "category": "historie",
+    "zone": "Rhodos by",
+    "description_da": "110 m høj bakke over Rhodos by med resterne af det antikke Akropolis (Apollon-tempel, stadion). Man kan sætte sig på bænke langs den palmekantede boulevard og se solnedgangen over Ixia-bugten og havet. Siden 2024 er der en café med is, sandwich og drikkevarer samt toiletter – så de ældre kan nyde udsigten uden at kravle.",
+    "travel_from_ialysos": "Ca. 8 km, ca. 15 min med bil",
+    "needs_car": false,
+    "without_car_da": "RODA-bus til Rhodos by + kort taxa op til Monte Smith (bakken er stejl at gå), eller taxa direkte fra Ialysos ca. €12–15.",
+    "season_da": "Hele året; caféen åben til sent om aftenen i turistsæsonen",
+    "price_da": "Gratis adgang; café-priser moderate",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "Udsigtspunktet og bænkene er flade og lette at nå – ingen klatring nødvendig. Kom ca. 45 min før solnedgang for at få plads. Alternativt har Filerimos også udsigtscafé, men kræver mere gang.",
+    "maps_query": "Monte Smith Viewpoint, Rhodes Town",
+    "top": false
+  },
+  {
+    "name_da": "Aftenslentretur på Mandraki-promenaden & Nea Agora",
+    "category": "dagsudflugt",
+    "zone": "Rhodos by",
+    "description_da": "Afslappet aftentur langs Mandraki havns promenade forbi yachter og fiskerbåde, med stop ved en café til en frappé. Lige ved ligger Nea Agora (det nye marked) – en farverig basar med krydderier, lokale slik, souvenirs og små spisesteder. Flad og rolig familieaktivitet uden bil til de stille aftener.",
+    "travel_from_ialysos": "Ca. 8 km, ca. 15-20 min med bil",
+    "needs_car": false,
+    "without_car_da": "RODA-bus fra Ialysos standser ved centralbusstationen lige ved Nea Agora/Mandraki (ca. 20-30 min). Eller taxa ca. €12–15.",
+    "season_da": "Hele året",
+    "price_da": "Gratis at slentre; café/marked efter forbrug",
+    "good_for_kids": true,
+    "good_for_elderly": true,
+    "active": false,
+    "near_hotel": false,
+    "tips_da": "Promenaden er helt flad og perfekt for rollator/klapvogn. Kombinér med solnedgang og en is. Hvis I hellere vil blive nær hotellet, fungerer Ialysos' egen strandpromenade som en roligere aftentur uden bil.",
+    "maps_query": "Mandraki Harbour promenade, Rhodes",
+    "top": false
+  }
+];
+
+const PRACTICAL = [
+  {
+    "title_da": "Sådan kommer I rundt",
+    "points_da": [
+      "Lejebil/minibus: Til 14 personer skal I have enten 2-3 almindelige biler eller 1-2 minibusser (9-personers). En enkelt 9-personers minibus rummer ikke alle 14 - regn med 2 minibusser eller 1 minibus + 1-2 biler.",
+      "Pris minibus (9 personers): I højsæsonen (juli/august) typisk ca. 60-90 EUR/dag, dvs. ca. 400-600 EUR/uge pr. minibus. To minibusser = groft 800-1.200 EUR/ugen. Book tidligt - 9-personers er hurtigt udsolgt om sommeren.",
+      "Pris almindelig bil: Fra ca. 30-50 EUR/dag i højsæson. Tre biler kan blive billigere og mere fleksibelt end to minibusser, men kræver tre chauffører.",
+      "Afhentning: Lej ved Rhodos Lufthavn (Diagoras) - ligger kun ca. 7-8 km fra Ialysos/Kremasti, så det er praktisk. Mange selskaber har skranke direkte i terminalen (Avis, Hertz, Enterprise, Green Motion m.fl.).",
+      "Bus (RODA/DES vestkystlinje): Lokalbussen kører langs vestkysten Rhodos By - Ixia - Ialysos - Kremasti - lufthavn. Billet fra ca. 1,20-2,50 EUR pr. tur til Rhodos By. Køretid Ialysos-Rhodos By ca. 20-30 min.",
+      "Bus er billig, men: stopper ikke ved hoteldøren, har trapper, og i højsommer kan den være fuld/varm - tungt for 4 små børn og 2 ældre samlet. Tjek seneste sommerplan lokalt (planen skifter sæsonvis); RODA tlf. 22410 26300.",
+      "Taxi: Fast/meter-takst sat jan. 2025. Rhodos By - Ialysos ca. 10-12 EUR. Lufthavn - Ialysos ca. 15-20 EUR (+ ca. 2,85 EUR lufthavnstillæg). En almindelig taxi tager max 4 pers., så hele gruppen kræver 3-4 taxier.",
+      "Organiserede ture med hotelafhentning: Bådture til Symi, Lindos og Chalki sælges med pickup i bl.a. Ialysos/Ixia (fx Rhodes Sea Lines, Half Price Tours, GetYourGuide). Ideelt når I ikke har bil - I bliver hentet og sat af."
+    ]
+  },
+  {
+    "title_da": "Med eller uden bil",
+    "points_da": [
+      "Uden bil er det realistisk at bo i Ialysos: hotellet ligger ved stranden, og der er restauranter, supermarkeder og apotek i gå-/kort taxiafstand i Ialysos/Kremasti.",
+      "Rhodos Gamle By når I nemt uden bil - bus (20-30 min, billig) eller 3-4 taxier (ca. 10-12 EUR pr. taxi). God dagsudflugt for hele gruppen, men brostens-gågader, så planlæg pauser for de ældre.",
+      "Udflugter længere væk (Lindos, Symi, Kallithea) uden bil: book organiserede ture MED hotelafhentning - så undgår I logistik med busskift og lange gåture i varmen.",
+      "Konklusion: En uge UDEN bil er fuldt muligt og sparer parkering/forsikring - kombinér strand ved hotellet + 1-2 organiserede ture med pickup + taxi til Rhodos By.",
+      "MED bil får I mere frihed (egne strande, supermarked, spontane ture), men kræver 2-3 chauffører, parkering i Rhodos By er besværlig, og I kører i venstre... nej, højrekørsel, men ukendte veje med små børn. Vej op mod prisen.",
+      "Mellemløsning: Lej bil/minibus kun 2-3 dage til de udflugter I selv vil styre, og brug taxi/bus + organiserede ture resten - billigst og mindst stress for gruppen."
+    ]
+  },
+  {
+    "title_da": "Sommervarme & børn/ældre",
+    "points_da": [
+      "Juli/august på Rhodos er typisk 30-35 grader, ofte mere midt på dagen, med stærk sol og høj UV. Det er for hårdt for både 5-8-årige og de 2 ældre at være aktive kl. 12-16.",
+      "Læg aktiviteter tidligt (før kl. 11) og sent (efter kl. 17). Hold middags-siesta på hotellet/i skygge - det er den lokale rytme og det sikreste for børn og ældre.",
+      "Sørg for skygge: parasol/UV-telt på stranden, solhat og UV-badetøj til børnene. Solcreme faktor 50 på alle, smør igen efter bad.",
+      "Drik rigeligt vand - hav altid vandflasker med til børn og ældre, også på korte ture. Dehydrering og hedeslag rammer netop de yngste og ældste først.",
+      "Hold øje med varmetegn hos de ældre (svimmelhed, hovedpine, forvirring) og børn (klynk, rødme, sløvhed) - søg straks skygge, væske og afkøling.",
+      "Vestkysten (Ialysos/Ixia) er mere blæsende end østkysten - behageligt mod varmen, men strandvinden kan også svie/dehydrere; pas på solskoldning trods kølig fornemmelse.",
+      "Vælg sandstrande/lavt vand til børnene; Ialysos-stranden er præget af småsten/grus, så badesko er en god idé for både børn og ældre."
+    ]
+  },
+  {
+    "title_da": "Hvad er åbent om sommeren 2026",
+    "points_da": [
+      "Juli og august er højsæson - stort set alt har åbent: restauranter, butikker, apoteker, strandbarer, vandsport, bådture og museer i Rhodos By.",
+      "Bådture og udflugter (Symi, Lindos, Chalki) sejler dagligt i højsæsonen - book gerne et par dage i forvejen i juli/august, da de er populære.",
+      "Lejebiler/minibusser er mest efterspurgte i juli/august - book i god tid (helst nu), ellers risikerer I udsolgt på 9-personers.",
+      "Bus kører efter sommerplan med flere afgange end om vinteren, men tjek altid den aktuelle plan lokalt/ved stoppestedet, da tider ændres sæsonvis.",
+      "Forvent travlhed og kø ved de store seværdigheder (Lindos, Gamle By) - kom tidligt på dagen, hvilket også er køligst for børn og ældre."
+    ]
+  },
+  {
+    "title_da": "Praktisk & penge",
+    "points_da": [
+      "Valuta: Euro (EUR). Kort accepteres bredt, men hav kontanter til små caféer, busser, marked og drikkepenge.",
+      "Omtrentlige dagsudgifter pr. voksen: enkel frokost 8-15 EUR, middag ude 15-30 EUR, kaffe/øl 3-5 EUR, vand 0,5-1 EUR. Børnemenuer findes mange steder.",
+      "Drikkepenge: ikke obligatorisk. Det er almindeligt at runde op eller give ca. 5-10 % på restaurant ved god service; lidt til taxi/guide er pænt.",
+      "Vand: hav altid flaskevand med, især til børn og ældre i varmen. Køb store flasker i supermarked og fyld mindre flasker.",
+      "Apotek (farmakeio, grønt kors): findes i Ialysos/Kremasti og Rhodos By. Tag rejseapotek med (solcreme f.50, after-sun, smertestillende til børn/voksne, plaster, evt. rehydreringssalt).",
+      "Nødnummer: 112 (fælles EU-nødnummer, virker i hele Grækenland, også engelsktalende). Gem det i alle voksnes telefoner.",
+      "Solcreme: køb evt. med hjemmefra, da det kan være dyrere på øen; faktor 50 til børn og ældre, og medbring rigeligt.",
+      "Husk EU-sygesikringskort (det blå kort) til alle 14 og en rejseforsikring - vigtigt med 4 børn og 2 ældre i gruppen."
+    ]
+  }
+];
+
+/* ============================================================
+   Opsætning: zoner, kategorier, filtre
+   ============================================================ */
+const ZONES = [
+  { id:"Tæt på hotellet",        icon:"🏖️", sub:"Inden for ca. 15 km af Ialysos – nemt at nå." },
+  { id:"Rhodos by",              icon:"🏰", sub:"Den middelalderlige gamle by – ca. 8 km væk." },
+  { id:"Sydpå & dagsudflugter",  icon:"🚗", sub:"Lindos, sydkysten og resten af øen – planlæg en hel dag." },
+  { id:"Aktivt & adventure",     icon:"🤿", sub:"For dem i familien, der vil have action." },
+];
+
+const CATS = {
+  strand:     {label:"Strand",            icon:"🏖️"},
+  historie:   {label:"Historie & kultur", icon:"🏛️"},
+  natur:      {label:"Natur",             icon:"🌿"},
+  vandsport:  {label:"Vandsport",         icon:"🌊"},
+  dagsudflugt:{label:"Dagsudflugt",       icon:"🧳"},
+  mad:        {label:"Mad & hygge",       icon:"🍽️"},
+  forlystelse:{label:"Forlystelse",       icon:"🎢"},
+};
+
+/* Filtre: gruppe -> liste. Inden for en gruppe = ELLER, på tværs = OG. */
+const FILTERS = {
+  who:[
+    {id:"kids",  label:"Godt for børn (5–8)", icon:"🧒", test:a=>a.good_for_kids},
+    {id:"eld",   label:"Roligt / godt for ældre", icon:"🧓", test:a=>a.good_for_elderly},
+    {id:"act",   label:"Aktivt / adventure", icon:"⚡", test:a=>a.active},
+  ],
+  dist:[
+    {id:"near",  label:"Tæt på hotellet", icon:"📍", test:a=>a.near_hotel},
+    {id:"nocar", label:"Kan nås uden bil", icon:"🚌", test:a=>!a.needs_car},
+    {id:"car",   label:"Kræver bil", icon:"🚗", test:a=>a.needs_car},
+  ],
+  cat:[], // udfyldes ud fra data
+};
+
+const active = {who:new Set(),dist:new Set(),cat:new Set()};
+
+/* ============================================================
+   Render
+   ============================================================ */
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+function txt(tag,cls,t){const e=document.createElement(tag);if(cls)e.className=cls;if(t!=null)e.textContent=t;return e;}
+
+function buildCatFilters(){
+  const present = new Set(ACTIVITIES.map(a=>a.category));
+  FILTERS.cat = Object.keys(CATS).filter(k=>present.has(k)).map(k=>(
+    {id:k,label:CATS[k].label,icon:CATS[k].icon,test:a=>a.category===k}
+  ));
+}
+
+function renderChips(groupKey,containerId){
+  const c=document.getElementById(containerId);c.innerHTML="";
+  FILTERS[groupKey].forEach(f=>{
+    const b=el("button","chip",`<span class="ic">${f.icon}</span>${f.label}`);
+    b.type="button";b.setAttribute("aria-pressed","false");
+    b.addEventListener("click",()=>{
+      if(active[groupKey].has(f.id)){active[groupKey].delete(f.id);b.setAttribute("aria-pressed","false");}
+      else{active[groupKey].add(f.id);b.setAttribute("aria-pressed","true");}
+      apply();
+    });
+    c.appendChild(b);
+  });
+}
+
+function badgeFor(a){
+  const out=[];
+  if(a.good_for_kids) out.push(`<span class="badge b-kids">🧒 Børn</span>`);
+  if(a.good_for_elderly) out.push(`<span class="badge b-eld">🧓 Roligt</span>`);
+  if(a.active) out.push(`<span class="badge b-act">⚡ Aktivt</span>`);
+  if(a.near_hotel) out.push(`<span class="badge b-near">📍 Tæt på</span>`);
+  out.push(a.needs_car?`<span class="badge b-car">🚗 Bil</span>`:`<span class="badge b-nocar">🚌 Uden bil</span>`);
+  const cat=CATS[a.category];if(cat)out.push(`<span class="badge b-cat">${cat.icon} ${cat.label}</span>`);
+  return out.join("");
+}
+
+function cardFor(a){
+  const card=el("article","card"+(a.top?" top":""));
+  card._a=a;
+  card.appendChild(el("div","badges",badgeFor(a)));
+  card.appendChild(txt("h3",null,a.name_da));
+  card.appendChild(txt("p","desc",a.description_da));
+  const meta=el("div","meta");
+  const rows=[
+    ["📏","Afstand",a.travel_from_ialysos],
+    ["🗓️","Sæson",a.season_da],
+    ["💶","Pris",a.price_da],
+  ];
+  if(!a.needs_car && a.without_car_da) rows.push(["🚌","Uden bil",a.without_car_da]);
+  rows.forEach(([ic,k,v])=>{
+    if(!v)return;
+    meta.appendChild(el("span","k",`${ic} ${k}`));
+    meta.appendChild(txt("span",null,v));
+  });
+  card.appendChild(meta);
+  if(a.tips_da){
+    const tip=el("div","tip","<b>Tip:</b> ");
+    tip.appendChild(document.createTextNode(a.tips_da));
+    card.appendChild(tip);
+  }
+  const act=el("div","actions");
+  const q=encodeURIComponent(a.maps_query||a.name_da+", Rhodes");
+  const link=el("a","maplink",`🗺️ Vis på kort`);
+  link.href=`https://www.google.com/maps/search/?api=1&query=${q}`;
+  link.target="_blank";link.rel="noopener";
+  act.appendChild(link);
+  card.appendChild(act);
+  return card;
+}
+
+function buildZones(){
+  const root=document.getElementById("zones");root.innerHTML="";
+  ZONES.forEach(z=>{
+    const items=ACTIVITIES.filter(a=>a.zone===z.id);
+    if(!items.length)return;
+    const sec=el("section","zone");sec.dataset.zone=z.id;
+    sec.appendChild(el("h2",null,`${z.icon} ${z.id}`));
+    sec.appendChild(el("p","zsub",z.sub));
+    const grid=el("div","grid");
+    items.forEach(a=>grid.appendChild(cardFor(a)));
+    sec.appendChild(grid);
+    root.appendChild(sec);
+  });
+}
+
+function matches(a){
+  for(const g of ["who","dist","cat"]){
+    const set=active[g];
+    if(set.size===0)continue;
+    const ok=FILTERS[g].some(f=>set.has(f.id)&&f.test(a));
+    if(!ok)return false;
+  }
+  return true;
+}
+
+function apply(){
+  let shown=0;
+  document.querySelectorAll(".card").forEach(c=>{
+    const m=matches(c._a);
+    c.hidden=!m;if(m)shown++;
+  });
+  document.querySelectorAll(".zone").forEach(sec=>{
+    const any=[...sec.querySelectorAll(".card")].some(c=>!c.hidden);
+    sec.hidden=!any;
+  });
+  const total=ACTIVITIES.length;
+  const anyFilter=active.who.size||active.dist.size||active.cat.size;
+  document.getElementById("count").innerHTML= anyFilter
+    ? `Viser <b>${shown}</b> af ${total} aktiviteter`
+    : `<b>${total}</b> aktiviteter i alt`;
+  document.getElementById("reset").hidden=!anyFilter;
+  document.getElementById("noresults").classList.toggle("show",shown===0);
+}
+
+function resetAll(){
+  ["who","dist","cat"].forEach(g=>active[g].clear());
+  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));
+  apply();
+}
+
+function buildPractical(){
+  const root=document.getElementById("practical-acc");root.innerHTML="";
+  PRACTICAL.forEach((s,i)=>{
+    const d=el("details","acc");if(i===0)d.open=true;
+    const sum=txt("summary",null,s.title_da);
+    d.appendChild(sum);
+    const body=el("div","body");
+    const ul=el("ul");
+    (s.points_da||[]).forEach(p=>ul.appendChild(txt("li",null,p)));
+    body.appendChild(ul);
+    d.appendChild(body);
+    root.appendChild(d);
+  });
+}
+
+/* ============================================================
+   Init
+   ============================================================ */
+function init(){
+  buildCatFilters();
+  renderChips("who","g-who");
+  renderChips("dist","g-dist");
+  renderChips("cat","g-cat");
+  buildZones();
+  buildPractical();
+  document.getElementById("reset").addEventListener("click",resetAll);
+  setupFilterPanel();
+  apply();
+}
+
+// Filterpanelet er åbent på store skærme, foldet sammen på mobil (kompakt sticky bar).
+function setupFilterPanel(){
+  const panel=document.getElementById("filterpanel");
+  const mq=window.matchMedia("(min-width:760px)");
+  const sync=e=>{ panel.open = e.matches; };
+  sync(mq);
+  (mq.addEventListener ? mq.addEventListener("change",sync) : mq.addListener(sync));
+}
+init();
+</script>
+</body>
+</html>
