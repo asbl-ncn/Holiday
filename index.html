@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a4a8f">
+<meta name="description" content="Aktivitetsguide til familieferien på Rhodos – med base på Matoula Beach i Ialysos. Filtrér efter børn, ældre, aktivt, afstand og type.">
+<title>Rhodos-guide for hele familien</title>
+<style>
+  :root{
+    --aegean:#0a4a8f;       /* deep Greek blue */
+    --aegean-2:#1a73c9;     /* brighter blue */
+    --sea:#1aa9c9;          /* turquoise */
+    --sand:#f4ead3;         /* sandy */
+    --ink:#13212e;          /* text */
+    --muted:#5b6b78;        /* muted text */
+    --line:#e2e8ee;         /* borders */
+    --bg:#f6f9fc;           /* page bg */
+    --card:#ffffff;
+    --ok:#127a4b;
+    --warn:#9a6a00;
+    --shadow:0 1px 2px rgba(16,42,67,.06),0 6px 18px rgba(16,42,67,.08);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--aegean-2)}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    background:linear-gradient(160deg,var(--aegean) 0%,var(--aegean-2) 55%,var(--sea) 130%);
+    color:#fff;
+    padding:calc(env(safe-area-inset-top) + 28px) 0 26px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(1200px 220px at 80% -40%,rgba(255,255,255,.18),transparent 60%);
+    pointer-events:none;
+  }
+  .hero h1{margin:0 0 6px;font-size:1.7rem;line-height:1.15;letter-spacing:-.01em}
+  .hero p{margin:0;opacity:.95;font-size:1rem;max-width:48ch}
+  .hero .where{
+    display:inline-flex;gap:8px;align-items:center;margin-top:14px;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);
+    padding:7px 12px;border-radius:999px;font-size:.86rem;backdrop-filter:blur(2px);
+  }
+
+  /* ---------- Intro ---------- */
+  .intro{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin:18px 0;box-shadow:var(--shadow);
+  }
+  .intro h2{margin:0 0 6px;font-size:1.05rem}
+  .intro p{margin:.3em 0;color:var(--muted);font-size:.94rem}
+
+  /* ---------- Filter bar ---------- */
+  .filterbar{
+    position:sticky;top:0;z-index:30;background:rgba(246,249,252,.92);
+    backdrop-filter:saturate(140%) blur(8px);
+    border-bottom:1px solid var(--line);padding:10px 0 8px;margin-bottom:14px;
+  }
+  .filtergroup{margin:6px 0}
+  .filtergroup .glabel{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:0 2px 6px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);
+    padding:8px 13px;border-radius:999px;font-size:.86rem;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;line-height:1;font-weight:600;
+    transition:transform .04s ease,background .12s ease,border-color .12s ease,color .12s ease;
+    min-height:38px;
+  }
+  .chip:hover{border-color:var(--aegean-2)}
+  .chip:active{transform:scale(.97)}
+  .chip[aria-pressed="true"]{background:var(--aegean);border-color:var(--aegean);color:#fff}
+  .chip .ic{font-size:1rem}
+  .filtermeta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;flex-wrap:wrap}
+  .count{font-size:.86rem;color:var(--muted)}
+  .count b{color:var(--ink)}
+  .reset{
+    appearance:none;background:none;border:none;color:var(--aegean-2);font-weight:700;
+    font-size:.86rem;cursor:pointer;padding:6px 4px;border-radius:8px;
+  }
+  .reset[hidden]{display:none}
+
+  /* ---------- Zones & cards ---------- */
+  .zone{margin:22px 0 8px}
+  .zone h2{
+    font-size:1.18rem;margin:0 0 2px;display:flex;align-items:center;gap:9px;letter-spacing:-.01em;
+  }
+  .zone .zsub{color:var(--muted);font-size:.88rem;margin:0 0 12px}
+  .zone[hidden]{display:none}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:620px){.grid{grid-template-columns:1fr 1fr}}
+  @media(min-width:920px){.grid{grid-template-columns:1fr 1fr 1fr}}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:15px 15px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;
+    position:relative;
+  }
+  .card[hidden]{display:none}
+  .card.top::before{
+    content:"★ Familiefavorit";position:absolute;top:-9px;left:14px;
+    background:linear-gradient(90deg,var(--aegean),var(--sea));color:#fff;
+    font-size:.68rem;font-weight:800;letter-spacing:.03em;padding:3px 9px;border-radius:999px;
+  }
+  .card h3{margin:4px 0 0;font-size:1.06rem;line-height:1.2}
+  .card .desc{margin:0;color:#33414d;font-size:.92rem}
+  .badges{display:flex;flex-wrap:wrap;gap:6px}
+  .badge{
+    font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:999px;
+    border:1px solid transparent;white-space:nowrap;
+  }
+  .b-kids{background:#fff3e0;color:#9a5a00;border-color:#ffe1b3}
+  .b-eld{background:#eaf3ff;color:#11528f;border-color:#cfe3fb}
+  .b-act{background:#e9f7ef;color:#127a4b;border-color:#c7ecd6}
+  .b-near{background:#eef0f3;color:#3f4d59;border-color:#dde3e9}
+  .b-car{background:#fdeaea;color:#a13434;border-color:#f6cccc}
+  .b-nocar{background:#eaf6f7;color:#0c6b78;border-color:#c8e9ec}
+  .b-cat{background:#f1ecfb;color:#5b3ea8;border-color:#e0d5f6}
+
+  .meta{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:.84rem;color:var(--muted);margin-top:2px}
+  .meta .k{font-weight:700;color:#41505c}
+  .tip{font-size:.84rem;color:#3a4954;background:#f3f8fc;border:1px dashed #cfe0ee;border-radius:10px;padding:7px 10px}
+  .tip b{color:var(--aegean)}
+  .card .actions{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap;padding-top:4px}
+  .maplink{
+    display:inline-flex;align-items:center;gap:6px;font-size:.86rem;font-weight:700;
+    text-decoration:none;color:#fff;background:var(--aegean-2);
+    padding:8px 12px;border-radius:10px;
+  }
+  .maplink:hover{background:var(--aegean)}
+
+  .noresults{display:none;text-align:center;color:var(--muted);padding:34px 10px}
+  .noresults.show{display:block}
+
+  /* ---------- Practical ---------- */
+  .practical{margin:30px 0 8px}
+  .practical h2{font-size:1.25rem;margin:0 0 12px;display:flex;align-items:center;gap:9px}
+  details.acc{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow);
+  }
+  details.acc>summary{
+    cursor:pointer;list-style:none;padding:14px 16px;font-weight:700;font-size:.98rem;
+    display:flex;align-items:center;gap:10px;
+  }
+  details.acc>summary::-webkit-details-marker{display:none}
+  details.acc>summary::after{content:"＋";margin-left:auto;color:var(--muted);font-weight:700}
+  details.acc[open]>summary::after{content:"－"}
+  details.acc .body{padding:0 16px 14px;color:#33414d;font-size:.92rem}
+  details.acc .body ul{margin:.2em 0;padding-left:1.2em}
+  details.acc .body li{margin:.32em 0}
+
+  footer{margin:30px 0 40px;color:var(--muted);font-size:.82rem;text-align:center}
+  footer p{margin:.4em 0}
+  .disclaimer{background:#fff8ec;border:1px solid #f1dfba;color:#7a5b14;border-radius:12px;padding:11px 14px;font-size:.84rem;margin:16px 0;text-align:left}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <h1>Rhodos-guide for hele familien 🇬🇷</h1>
+    <p>Aktiviteter og oplevelser tæt på Matoula Beach – og over hele øen. Filtrér efter hvem det passer til, hvor langt der er, og hvad I har lyst til.</p>
+    <span class="where">📍 Base: Matoula Beach, Ialysos (Ialyssos)</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="intro">
+    <h2>Sådan bruger I guiden</h2>
+    <p>Vælg en eller flere knapper for at filtrere. F.eks. <b>“Godt for børn”</b> + <b>“Kan nås uden bil”</b> viser kun det, der passer. Tryk på <b>“Vis på kort”</b> for at få ruten på telefonen.</p>
+    <p id="famline">Tilpasset en familie på 14 – heraf 4 børn (5–8 år) og 2 ældre, der tager den med ro. ☀️</p>
+  </section>
+
+  <!-- ---------- Filters ---------- -->
+  <div class="filterbar">
+    <div class="wrap" style="padding:0">
+      <div class="filtergroup">
+        <div class="glabel">For hvem</div>
+        <div class="chips" id="g-who"></div>
+      </div>
+      <div class="filtergroup">
+        <div class="glabel">Afstand fra hotellet</div>
+        <div class="chips" id="g-dist"></div>
+      </div>
+      <div class="filtergroup">
+        <div class="glabel">Type</div>
+        <div class="chips" id="g-cat"></div>
+      </div>
+      <div class="filtermeta">
+        <span class="count" id="count"></span>
+        <button class="reset" id="reset" hidden>Nulstil filtre ✕</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="zones"></div>
+
+  <div class="noresults" id="noresults">
+    <p style="font-size:2rem;margin:0">🤷</p>
+    <p>Ingen aktiviteter matcher de valgte filtre.<br>Prøv at fjerne et filter.</p>
+  </div>
+
+  <div class="disclaimer">
+    ⚠️ <b>Bemærk:</b> Priser, åbningstider og sæson er vejledende og kan ændre sig – <b>tjek altid på stedet eller online</b> før I tager afsted. Guiden er lavet til sommeren 2026.
+  </div>
+
+  <!-- ---------- Practical ---------- -->
+  <section class="practical" id="practical">
+    <h2>🧭 Praktisk til turen</h2>
+    <div id="practical-acc"></div>
+  </section>
+
+  <footer>
+    <p>Lavet med ❤️ til familieturen til Rhodos · sommer 2026</p>
+    <p>Kilder: bl.a. lokale turistsider, Tripadvisor, GetYourGuide, Discover Greece m.fl. Indhold er research-baseret og kvalitetstjekket, men tjek altid aktuelle priser/åbningstider.</p>
+  </footer>
+</main>
+
+<script>
+/* ============================================================
+   DATA — injiceres fra research. Hver aktivitet følger dette skema.
+   ============================================================ */
+const ACTIVITIES = [
+  /* DATA_INJECTION_POINT */
+];
+
+const PRACTICAL = [
+  /* PRACTICAL_INJECTION_POINT */
+];
+
+/* ============================================================
+   Opsætning: zoner, kategorier, filtre
+   ============================================================ */
+const ZONES = [
+  { id:"Tæt på hotellet",        icon:"🏖️", sub:"Inden for ca. 15 km af Ialysos – nemt at nå." },
+  { id:"Rhodos by",              icon:"🏰", sub:"Den middelalderlige gamle by – ca. 8 km væk." },
+  { id:"Sydpå & dagsudflugter",  icon:"🚗", sub:"Lindos, sydkysten og resten af øen – planlæg en hel dag." },
+  { id:"Aktivt & adventure",     icon:"🤿", sub:"For dem i familien, der vil have action." },
+];
+
+const CATS = {
+  strand:     {label:"Strand",            icon:"🏖️"},
+  historie:   {label:"Historie & kultur", icon:"🏛️"},
+  natur:      {label:"Natur",             icon:"🌿"},
+  vandsport:  {label:"Vandsport",         icon:"🌊"},
+  dagsudflugt:{label:"Dagsudflugt",       icon:"🧳"},
+  mad:        {label:"Mad & hygge",       icon:"🍽️"},
+  forlystelse:{label:"Forlystelse",       icon:"🎢"},
+};
+
+/* Filtre: gruppe -> liste. Inden for en gruppe = ELLER, på tværs = OG. */
+const FILTERS = {
+  who:[
+    {id:"kids",  label:"Godt for børn (5–8)", icon:"🧒", test:a=>a.good_for_kids},
+    {id:"eld",   label:"Roligt / godt for ældre", icon:"🧓", test:a=>a.good_for_elderly},
+    {id:"act",   label:"Aktivt / adventure", icon:"⚡", test:a=>a.active},
+  ],
+  dist:[
+    {id:"near",  label:"Tæt på hotellet", icon:"📍", test:a=>a.near_hotel},
+    {id:"nocar", label:"Kan nås uden bil", icon:"🚌", test:a=>!a.needs_car},
+    {id:"car",   label:"Kræver bil", icon:"🚗", test:a=>a.needs_car},
+  ],
+  cat:[], // udfyldes ud fra data
+};
+
+const active = {who:new Set(),dist:new Set(),cat:new Set()};
+
+/* ============================================================
+   Render
+   ============================================================ */
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+
+function buildCatFilters(){
+  const present = new Set(ACTIVITIES.map(a=>a.category));
+  FILTERS.cat = Object.keys(CATS).filter(k=>present.has(k)).map(k=>(
+    {id:k,label:CATS[k].label,icon:CATS[k].icon,test:a=>a.category===k}
+  ));
+}
+
+function renderChips(groupKey,containerId){
+  const c=document.getElementById(containerId);c.innerHTML="";
+  FILTERS[groupKey].forEach(f=>{
+    const b=el("button","chip",`<span class="ic">${f.icon}</span>${f.label}`);
+    b.type="button";b.setAttribute("aria-pressed","false");
+    b.addEventListener("click",()=>{
+      if(active[groupKey].has(f.id)){active[groupKey].delete(f.id);b.setAttribute("aria-pressed","false");}
+      else{active[groupKey].add(f.id);b.setAttribute("aria-pressed","true");}
+      apply();
+    });
+    c.appendChild(b);
+  });
+}
+
+function badgeFor(a){
+  const out=[];
+  if(a.good_for_kids) out.push(`<span class="badge b-kids">🧒 Børn</span>`);
+  if(a.good_for_elderly) out.push(`<span class="badge b-eld">🧓 Roligt</span>`);
+  if(a.active) out.push(`<span class="badge b-act">⚡ Aktivt</span>`);
+  if(a.near_hotel) out.push(`<span class="badge b-near">📍 Tæt på</span>`);
+  out.push(a.needs_car?`<span class="badge b-car">🚗 Bil</span>`:`<span class="badge b-nocar">🚌 Uden bil</span>`);
+  const cat=CATS[a.category];if(cat)out.push(`<span class="badge b-cat">${cat.icon} ${cat.label}</span>`);
+  return out.join("");
+}
+
+function cardFor(a){
+  const card=el("article","card"+(a.top?" top":""));
+  card._a=a;
+  card.appendChild(el("div","badges",badgeFor(a)));
+  card.appendChild(el("h3",null,a.name_da));
+  card.appendChild(el("p","desc",a.description_da));
+  const meta=el("div","meta");
+  const rows=[
+    ["📏","Afstand",a.travel_from_ialysos],
+    ["🗓️","Sæson",a.season_da],
+    ["💶","Pris",a.price_da],
+  ];
+  if(!a.needs_car && a.without_car_da) rows.push(["🚌","Uden bil",a.without_car_da]);
+  rows.forEach(([ic,k,v])=>{
+    if(!v)return;
+    meta.appendChild(el("span","k",`${ic} ${k}`));
+    meta.appendChild(el("span",null,v));
+  });
+  card.appendChild(meta);
+  if(a.tips_da) card.appendChild(el("div","tip",`<b>Tip:</b> ${a.tips_da}`));
+  const act=el("div","actions");
+  const q=encodeURIComponent(a.maps_query||a.name_da+", Rhodes");
+  const link=el("a","maplink",`🗺️ Vis på kort`);
+  link.href=`https://www.google.com/maps/search/?api=1&query=${q}`;
+  link.target="_blank";link.rel="noopener";
+  act.appendChild(link);
+  card.appendChild(act);
+  return card;
+}
+
+function buildZones(){
+  const root=document.getElementById("zones");root.innerHTML="";
+  ZONES.forEach(z=>{
+    const items=ACTIVITIES.filter(a=>a.zone===z.id);
+    if(!items.length)return;
+    const sec=el("section","zone");sec.dataset.zone=z.id;
+    sec.appendChild(el("h2",null,`${z.icon} ${z.id}`));
+    sec.appendChild(el("p","zsub",z.sub));
+    const grid=el("div","grid");
+    items.forEach(a=>grid.appendChild(cardFor(a)));
+    sec.appendChild(grid);
+    root.appendChild(sec);
+  });
+}
+
+function matches(a){
+  for(const g of ["who","dist","cat"]){
+    const set=active[g];
+    if(set.size===0)continue;
+    const ok=FILTERS[g].some(f=>set.has(f.id)&&f.test(a));
+    if(!ok)return false;
+  }
+  return true;
+}
+
+function apply(){
+  let shown=0;
+  document.querySelectorAll(".card").forEach(c=>{
+    const m=matches(c._a);
+    c.hidden=!m;if(m)shown++;
+  });
+  document.querySelectorAll(".zone").forEach(sec=>{
+    const any=[...sec.querySelectorAll(".card")].some(c=>!c.hidden);
+    sec.hidden=!any;
+  });
+  const total=ACTIVITIES.length;
+  const anyFilter=active.who.size||active.dist.size||active.cat.size;
+  document.getElementById("count").innerHTML= anyFilter
+    ? `Viser <b>${shown}</b> af ${total} aktiviteter`
+    : `<b>${total}</b> aktiviteter i alt`;
+  document.getElementById("reset").hidden=!anyFilter;
+  document.getElementById("noresults").classList.toggle("show",shown===0);
+}
+
+function resetAll(){
+  ["who","dist","cat"].forEach(g=>active[g].clear());
+  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));
+  apply();
+}
+
+function buildPractical(){
+  const root=document.getElementById("practical-acc");root.innerHTML="";
+  PRACTICAL.forEach((s,i)=>{
+    const d=el("details","acc");if(i===0)d.open=true;
+    const sum=el("summary",null,s.title_da);
+    d.appendChild(sum);
+    const body=el("div","body");
+    const ul=el("ul");
+    (s.points_da||[]).forEach(p=>ul.appendChild(el("li",null,p)));
+    body.appendChild(ul);
+    d.appendChild(body);
+    root.appendChild(d);
+  });
+}
+
+/* ============================================================
+   Init
+   ============================================================ */
+function init(){
+  buildCatFilters();
+  renderChips("who","g-who");
+  renderChips("dist","g-dist");
+  renderChips("cat","g-cat");
+  buildZones();
+  buildPractical();
+  document.getElementById("reset").addEventListener("click",resetAll);
+  apply();
+}
+init();
+</script>
+</body>
+</html>
