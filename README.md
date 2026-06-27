@@ -15,6 +15,12 @@ aktiviteterne efter:
 Hvert kort viser afstand fra Ialysos, sæson, vejledende pris, et tip og et
 **“Vis på kort”**-link (Google Maps), så man får ruten direkte på telefonen.
 
+Guiden indeholder:
+- **60+ aktiviteter** (strande, Rhodos by, dagsudflugter, aktivt, ø-ture m.m.)
+- **🗓️ Forslag til ugeprogram (7 dage)** – et balanceret oplæg til hele ugen.
+- **🧭 Praktiske sektioner** – transport med/uden bil, varmeråd til børn og ældre,
+  priser, samt spisesteder og indkøb nær hotellet.
+
 ## 🌐 Sådan publicerer du siden (GitHub Pages)
 
 Siden er bygget på branchen `claude/rhodes-activities-guide-ejqvj2`. Sådan får du
