@@ -64,21 +64,33 @@
   .intro h2{margin:0 0 6px;font-size:1.05rem}
   .intro p{margin:.35em 0;color:#44525d;font-size:1rem}
 
-  /* ---------- Filter panel (collapsible + sticky) ---------- */
+  /* ---------- Search + filter panel (sticky) ---------- */
   .filterpanel{
-    position:sticky;top:8px;z-index:30;margin-bottom:16px;
+    position:sticky;top:8px;z-index:30;margin-bottom:16px;padding:10px 12px;
     background:rgba(255,255,255,.97);backdrop-filter:saturate(140%) blur(8px);
     border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
   }
-  .filtersummary{
-    cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;
-    padding:13px 15px;font-weight:800;font-size:1rem;user-select:none;
+  .searchrow{display:flex;align-items:center;gap:8px}
+  .searchicon{font-size:1.05rem;opacity:.7;flex:0 0 auto}
+  .searchinput{
+    flex:1 1 auto;min-width:0;appearance:none;font-family:inherit;
+    border:1px solid var(--line);background:#fff;color:var(--ink);
+    border-radius:10px;padding:10px 12px;font-size:1rem;min-height:44px;
   }
-  .filtersummary::-webkit-details-marker{display:none}
-  .filtersummary .count{margin-left:auto;font-weight:600;color:var(--muted);font-size:.84rem}
-  .filtersummary .chev{color:var(--muted);transition:transform .15s ease;font-size:.7rem}
-  .filterpanel[open] .filtersummary .chev{transform:rotate(180deg)}
-  .filterbody{padding:2px 14px 12px;max-height:68vh;overflow:auto;border-top:1px solid var(--line)}
+  .searchinput::placeholder{color:#8a98a3}
+  .searchinput:focus{outline:none;border-color:var(--aegean-2);box-shadow:0 0 0 3px rgba(26,115,201,.16)}
+  .filtertoggle{
+    flex:0 0 auto;appearance:none;cursor:pointer;font-family:inherit;
+    border:1px solid var(--line);background:#fff;color:var(--ink);
+    border-radius:10px;padding:0 13px;min-height:44px;font-weight:700;font-size:.9rem;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .filtertoggle .chev{font-size:.7rem;color:var(--muted);transition:transform .15s ease}
+  .filtertoggle[aria-expanded="true"]{background:var(--aegean);border-color:var(--aegean);color:#fff}
+  .filtertoggle[aria-expanded="true"] .chev{transform:rotate(180deg);color:#fff}
+  .filtermini{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;min-height:22px}
+  .filterbody{margin-top:8px;border-top:1px solid var(--line);padding-top:10px;max-height:60vh;overflow:auto}
+  .filterpanel:not(.filters-open) .filterbody{display:none}
   .filtergroup{margin:8px 0}
   .filtergroup .glabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:0 2px 6px}
   .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -230,18 +242,25 @@
 
   <section class="intro">
     <h2>Sådan bruger I guiden</h2>
-    <p>Vælg en eller flere knapper for at filtrere. F.eks. <b>“Godt for børn”</b> + <b>“Kan nås uden bil”</b> viser kun det, der passer. Tryk på <b>“Vis på kort”</b> for at få ruten på telefonen.</p>
+    <p><b>Søg</b> øverst (fx “Lindos” eller “strand”), eller vælg en eller flere <b>filterknapper</b> – f.eks. “Godt for børn” + “Kan nås uden bil”. Tryk på <b>“Vis på kort”</b> for at få ruten på telefonen.</p>
     <p id="famline">Tilpasset en familie på 14 – heraf 4 børn (5–8 år) og 2 ældre, der tager den med ro. ☀️</p>
   </section>
 
-  <!-- ---------- Filters ---------- -->
-  <details class="filterpanel" id="filterpanel">
-    <summary class="filtersummary">
-      <span>🔎 Filtrér aktiviteter</span>
+  <!-- ---------- Search + Filters ---------- -->
+  <div class="filterpanel" id="filterpanel">
+    <div class="searchrow">
+      <span class="searchicon" aria-hidden="true">🔎</span>
+      <input id="search" class="searchinput" type="search" inputmode="search" autocomplete="off"
+             placeholder="Søg – fx “Lindos”, “strand”, “børn”, “uden bil”…" aria-label="Søg i aktiviteter">
+      <button id="filtertoggle" class="filtertoggle" type="button" aria-expanded="false" aria-controls="filterbody">
+        Filtre <span class="chev" aria-hidden="true">▼</span>
+      </button>
+    </div>
+    <div class="filtermini">
       <span class="count" id="count"></span>
-      <span class="chev">▼</span>
-    </summary>
-    <div class="filterbody">
+      <button class="reset" id="reset" hidden>Nulstil ✕</button>
+    </div>
+    <div class="filterbody" id="filterbody">
       <div class="filtergroup">
         <div class="glabel">For hvem</div>
         <div class="chips" id="g-who"></div>
@@ -254,17 +273,14 @@
         <div class="glabel">Type</div>
         <div class="chips" id="g-cat"></div>
       </div>
-      <div class="filtermeta">
-        <button class="reset" id="reset" hidden>Nulstil filtre ✕</button>
-      </div>
     </div>
-  </details>
+  </div>
 
   <div id="zones"></div>
 
   <div class="noresults" id="noresults">
     <p style="font-size:2rem;margin:0">🤷</p>
-    <p>Ingen aktiviteter matcher de valgte filtre.<br>Prøv at fjerne et filter.</p>
+    <p>Ingen aktiviteter matcher din søgning eller dine filtre.<br>Prøv at ændre søgningen eller fjerne et filter.</p>
   </div>
 
   <div class="disclaimer">
@@ -1522,6 +1538,7 @@ const FILTERS = {
 };
 
 const active = {who:new Set(),dist:new Set(),cat:new Set()};
+let searchQ="";
 
 /* ============================================================
    Render
@@ -1610,7 +1627,24 @@ function buildZones(){
   });
 }
 
+// Bygger (og cacher) en søgbar tekst pr. aktivitet – navn, beskrivelse, zone,
+// kategori, tip, sæson, pris + nøgleord så fx "børn" eller "uden bil" også rammer.
+function searchText(a){
+  if(a._search) return a._search;
+  const t=[];
+  if(a.good_for_kids)t.push("børn kids");
+  if(a.good_for_elderly)t.push("ældre roligt");
+  if(a.active)t.push("aktivt adventure");
+  if(a.near_hotel)t.push("tæt på hotellet nær");
+  t.push(a.needs_car?"kræver bil":"uden bil bus");
+  const cat=CATS[a.category]?CATS[a.category].label:a.category;
+  a._search=[a.name_da,a.description_da,a.zone,cat,a.tips_da,a.maps_query,a.season_da,a.price_da,t.join(" ")]
+    .join(" ").toLowerCase();
+  return a._search;
+}
+
 function matches(a){
+  if(searchQ && !searchText(a).includes(searchQ)) return false;
   for(const g of ["who","dist","cat"]){
     const set=active[g];
     if(set.size===0)continue;
@@ -1631,7 +1665,7 @@ function apply(){
     sec.hidden=!any;
   });
   const total=ACTIVITIES.length;
-  const anyFilter=active.who.size||active.dist.size||active.cat.size;
+  const anyFilter=active.who.size||active.dist.size||active.cat.size||searchQ;
   document.getElementById("count").innerHTML= anyFilter
     ? `Viser <b>${shown}</b> af ${total} aktiviteter`
     : `<b>${total}</b> aktiviteter i alt`;
@@ -1642,6 +1676,8 @@ function apply(){
 function resetAll(){
   ["who","dist","cat"].forEach(g=>active[g].clear());
   document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));
+  searchQ="";
+  const s=document.getElementById("search");if(s)s.value="";
   apply();
 }
 
@@ -1733,13 +1769,19 @@ function init(){
   apply();
 }
 
-// Filterpanelet er åbent på store skærme, foldet sammen på mobil (kompakt sticky bar).
+// Søgefeltet er altid synligt; filterknapperne er åbne på store skærme og
+// foldet sammen på mobil (tryk "Filtre" for at folde ud).
 function setupFilterPanel(){
   const panel=document.getElementById("filterpanel");
-  const mq=window.matchMedia("(min-width:760px)");
-  const sync=e=>{ panel.open = e.matches; };
-  sync(mq);
-  (mq.addEventListener ? mq.addEventListener("change",sync) : mq.addListener(sync));
+  const toggle=document.getElementById("filtertoggle");
+  const search=document.getElementById("search");
+  function setOpen(open){
+    panel.classList.toggle("filters-open",open);
+    toggle.setAttribute("aria-expanded",open?"true":"false");
+  }
+  toggle.addEventListener("click",()=>setOpen(!panel.classList.contains("filters-open")));
+  setOpen(window.matchMedia("(min-width:760px)").matches);
+  search.addEventListener("input",()=>{ searchQ=search.value.trim().toLowerCase(); apply(); });
 }
 init();
 </script>
